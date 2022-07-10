@@ -1,0 +1,29 @@
+{
+  "dependencies": {
+    "ejs": "^3.1.8",
+    "express": "^4.18.1"
+  },
+  "name": "lolrecordsearch",
+  "description": "",
+  "version": "1.0.0",
+  "main": "app.js",
+  "bin": {
+    "lolrecordsearch": "bin/www.js"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./bin/www.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/2jonghun/lolrecordsearch.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/2jonghun/lolrecordsearch/issues"
+  },
+  "homepage": "https://github.com/2jonghun/lolrecordsearch#readme",
+  "keywords": []
+}
