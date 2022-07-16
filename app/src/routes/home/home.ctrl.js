@@ -1,9 +1,10 @@
 'use strict';
+
 const riotapi = require('../../models/riotapi');
 
 const output = {
   home: (req, res) => {
-    res.render('home/index');
+    res.render('home/main');
   },
 
   showRecord: async (req, res) => {
@@ -12,7 +13,7 @@ const output = {
     const idInfo = await riotapi.getIdInfo(reqServer, reqUserName)
     if (idInfo.success == true) {
       console.log(idInfo.data);
-      res.render('home/showrecord', { data:idInfo.data });
+      res.render('home/showrecord', { userinfo:idInfo.data });
     } else {
       res.render('home/notfound');
     }

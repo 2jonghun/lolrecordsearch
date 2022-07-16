@@ -2,36 +2,38 @@
 <html lang="ko">
 
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://kit.fontawesome.com/062e36f81f.js" crossorigin="anonymous"></script>
-  <script src="/js/home/main.js" defer></script>
+  <%- include('../layout/head'); -%>
   <link rel="stylesheet" href="/css/home/showrecord.css">
+  <script src="/js/home/main.js" defer></script>
   <title>LoL Record</title>
 </head>
 
 <body>
   <div class="warpper">
+
+    <!-- header -->
     <div class="main__header">
-      <div class="main__titlebox">
-        <div class="main__logo">
-          <a href="/">LoL Record</a>
+      <%- include('../layout/header'); -%>
+    </div>
+
+    <!-- content -->
+    <div class="main__content">
+      <div class="content__userprofile">
+        <div class="profile__iconbox">
+          <p><%= userinfo.profileIconId %></p>
         </div>
-      </div>
-      <div class="main__searchbox">
-        <div class="select-country">
-          <select class="country__list">
-          </select>
-        </div>
-        <div class="main__inputbox">
-          <input type="text" class="username" placeholder="소환사명을 입력하세요">
-          <button class="show_record_btn">
-            <i class="fa-solid fa-magnifying-glass"></i>
-          </button>
+        <div class="profile__name_level">
+          <p><%= userinfo.name %></p>
+          <p><%= userinfo.summonerLevel %></p>
         </div>
       </div>
     </div>
+
+    <!-- footer -->
+    <div class="main__footer">
+      <%- include('../layout/footer'); -%>
+    </div>
+
   </div>
 </body>
 

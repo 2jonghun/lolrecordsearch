@@ -1,7 +1,91 @@
 @import url('./reset.css');
 @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;700&display=swap');
 
+.main__header {
+  background-color: #545454;
+
+  display: flex;
+  justify-content: space-between;
+
+  height: 80px;
+
+  align-items: center;
+
+  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
 .main__logo {
-    font-family: 'Ubuntu', sans-serif;
-    font-weight: 700;
-  }
+  padding: 8px 35px;
+}
+
+.main__logo a img {
+  width: 140px;
+  height: 50px;
+}
+
+.main__inputbox {
+  display: flex;
+
+  width: 300px;
+  height: 30px;
+  padding: 8px 35px;
+}
+
+.main__inputbox input {
+  width: 100%;
+  border: 0;
+  font-size: 14px;
+  outline: none;
+}
+
+.server__list {
+  width: 18%;
+
+  appearance: none;
+  -moz-appearance: none; /* Firefox */ 
+  -webkit-appearance: none; /* Safari and Chrome */
+
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-top-left-radius: 25px;
+  border-bottom-left-radius: 25px;
+
+  border: 0;
+
+  padding: 0;
+  margin-right: 0;
+  text-align-last: center;
+  -moz-text-align-last: center;
+  
+  font-weight: 700;
+  background-color: white;
+  color:#24292e;
+
+  font-size: 14px;
+
+  outline: none;
+
+  cursor:pointer;
+}
+
+.show_record_btn {
+  width: 18%;
+
+  border-top-right-radius: 25px;
+  border-bottom-right-radius: 25px;
+  
+  border-style: solid;
+  border-width: 1px;
+  padding: 0;
+  margin-left: 0;
+  
+  border: 0;
+
+  font-weight: 700;
+  background-color: white;
+  color:#24292e;
+
+  font-size: 14px;
+
+  cursor:pointer;
+}
