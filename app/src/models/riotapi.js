@@ -2,7 +2,7 @@
 
 const superagent = require('superagent');
 
-const apiKey = 'RGAPI-88333cd8-fa55-4a2d-aebb-dc21ed8789b8';
+const apiKey = 'RGAPI-746071d8-4957-48ea-a177-4dee9cb574c0';
 const BASE_URL = 'https://kr.api.riotgames.com/lol/summoner/v4/summoners/by-name/';
 
 class RiotApi {

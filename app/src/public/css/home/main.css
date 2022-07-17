@@ -20,8 +20,11 @@ html {
 }
 
 .main__searchbox {
+  width: 100%;
   height: 100%;
   align-items: center;
+
+  position: relative;
 
   display: flex;
   flex-direction: column;
@@ -31,15 +34,23 @@ html {
 .main__inputbox {
   display: flex;
 
-  width: 430px;
+  width: 500px;
   height: 46px;
 }
 
 .main__inputbox input {
   width: 100%;
+  height: 95%;
+
   border: 0;
   font-size: 18px;
+
+  padding-left: 0.5em;
   outline: none;
+}
+
+::placeholder {
+  color: #24292e;
 }
 
 .server__list {
@@ -71,6 +82,20 @@ html {
   outline: none;
 
   cursor:pointer;
+}
+
+@supports not (text-align-last: center) {
+  .server__list {
+      padding-left: 1.2em;
+  }
+}
+
+.server__list::-ms-expand{
+	display: none; /* IE 10, 11 */
+}
+
+.server__list option{
+  color: #24292e;
 }
 
 .show_record_btn {
