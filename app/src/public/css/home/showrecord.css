@@ -129,3 +129,11 @@
 
   cursor:pointer;
 }
+
+.content__userprofile {
+  display: flex;
+}
+
+.profile__left {
+  display: flex;
+}

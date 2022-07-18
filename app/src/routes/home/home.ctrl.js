@@ -21,8 +21,13 @@ const output = {
 }
 
 const process = {
-  getIdInfo: (req, res) => {
-// 
+  getMatchId: async (req, res) => {
+    const puuid = req.body.puuid;
+    const continent = req.body.continent;
+    const matchInfo = await riotapi.getMatchId(continent, puuid);
+    if (matchInfo.success == true) {
+      res.send(matchInfo.data);
+    }
   }
 }
 

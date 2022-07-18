@@ -26,10 +26,6 @@ showRecordBtn.addEventListener('click', () => {
     return
   }
 
-  const req = {
-    username: userName.value,
-    reqServer: reqServer.value,
-  };
-
-  location.href = `/showRecord/${req.reqServer}/${req.username}`
+  setCookie('reqServer', reqServer.value, 30)
+  location.href = `/showRecord/${reqServer.value}/${userName.value}`
 })

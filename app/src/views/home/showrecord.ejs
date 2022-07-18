@@ -5,6 +5,7 @@
   <%- include('../layout/head'); -%>
   <link rel="stylesheet" href="/css/home/showrecord.css">
   <script src="/js/home/main.js" defer></script>
+  <script src="/js/home/showrecord.js" defer></script>
   <title>LoL Record</title>
 </head>
 
@@ -19,13 +20,16 @@
     <!-- content -->
     <div class="main__content">
       <div class="content__userprofile">
-        <div class="profile__iconbox">
-          <p><%= userinfo.profileIconId %></p>
+        <div class="profile__left">
+          <div class="profile__iconbox">
+            <p><%= userinfo.profileIconId %></p>
+          </div>
+          <div class="profile__name_level">
+            <p><%= userinfo.name %></p>
+            <p><%= userinfo.summonerLevel %></p>
+          </div>
         </div>
-        <div class="profile__name_level">
-          <p><%= userinfo.name %></p>
-          <p><%= userinfo.summonerLevel %></p>
-        </div>
+        <div class="profile__right"></div>
       </div>
     </div>
 
