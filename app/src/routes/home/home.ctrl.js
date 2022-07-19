@@ -21,12 +21,26 @@ const output = {
 }
 
 const process = {
-  getMatchId: async (req, res) => {
-    const puuid = req.body.puuid;
+  getMatchInfo: async (req, res) => {
     const continent = req.body.continent;
-    const matchInfo = await riotapi.getMatchId(continent, puuid);
-    if (matchInfo.success == true) {
-      res.send(matchInfo.data);
+    const puuid = req.body.puuid;
+    const matchInfos = await riotapi.getMatchInfo(continent, puuid);
+    const infoIndex = Object.keys(matchInfos);
+
+    const newInfos = [];
+
+    try {
+      for (let i = 0; i < infoIndex.length; i++) {
+        if (matchInfos[i].success == true) {
+          newInfos.push(matchInfos[i].data);
+        } else {
+          newInfos.push('false');
+        }
+      }
+      res.send(newInfos);
+    }
+    catch {
+      res.send('false');
     }
   }
 }

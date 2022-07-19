@@ -11,29 +11,33 @@ const continents = {
 function checkContinent(server) {
   const continentKey = Object.keys(continents);
 
-  for (continent of continentKey) {
-    for (let i = 0; i < continents[continent].length; i++) {
-      if (continents[continent][i] === server) {
-        return continent;
+  for (const c of continentKey) {
+    for (let i = 0; i < continents[c].length; i++) {
+      if (continents[c][i] === server) {
+        return c;
       }
     }
   }
 }
 
+const continent = checkContinent(getServer);
+
+
+
 const req = {
-  continent: checkContinent(getServer),
+  continent,
   puuid
 }
 
-fetch('/getmatchid', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(req)
-  })
-  .then(res => res.json())
-  .then(data => {
-    console.log(data);
-  })
-  .catch(console.error);
+fetch('/getmatchinfo', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify(req)
+})
+.then(res => res.json())
+.then(data => {
+  console.log(data);
+})
+.catch(err => console.error);
