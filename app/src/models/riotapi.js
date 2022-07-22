@@ -2,18 +2,20 @@
 
 const superagent = require('superagent');
 
-const apiKey = 'RGAPI-0d07efcf-310e-408b-99fe-899d000123d4';
+const apiKey = 'RGAPI-abf6a767-c1c2-4ea0-ab5d-a8e2eb358961';
+const middleUrl = 'api.riotgames.com'
 
 class RiotApi {
   static getIdInfo(reqServer, reqId) {
-    const idInfoUrl = `https://${reqServer}.api.riotgames.com/lol/summoner/v4/summoners/by-name/${reqId}`
+    const idInfoUrl = `https://${reqServer}.${middleUrl}/lol/summoner/v4/summoners/by-name/${reqId}`
     return superagent
       .get(idInfoUrl)
       .set('X-Riot-Token', apiKey)
       .then(res => {
         if (res.statusCode == 200) {
-          return { success:true, data:res.body };
+          return { success:true, encryptedId:res.body.id, profileIconId:res.body.profileIconId };
         } else {
+          console.log('실패');
           return { success:false };
          }
        })
@@ -22,47 +24,27 @@ class RiotApi {
       });
   }
 
-  static getMatchId(reqContinent, reqPuuid) {
-    const matchIdUrl = `https://${reqContinent}.api.riotgames.com/lol/match/v5/matches/by-puuid/${reqPuuid}/ids?start=0&count=10`
+  static async getLeagueId(reqServer, reqId) {
+    const idInfo = await this.getIdInfo(reqServer, reqId);
+    const encryptedId = idInfo.encryptedId;
+    const profileIconId = idInfo.profileIconId;
+    const leagueIdUrl = `https://${reqServer}.api.riotgames.com/lol/league/v4/entries/by-summoner/${encryptedId}`
     return superagent
-      .get(matchIdUrl)
+      .get(leagueIdUrl)
       .set('X-Riot-Token', apiKey)
       .then(res => {
         if (res.statusCode == 200) {
-          return { success:true, data:res.body };
+          console.log(res.body);
+          return { success:true, data:res.body, profileIconId };
         } else {
+          console.log(res);
           return { success:false };
         }
       })
       .catch(err => {
         return { success:false, msg:err };
-      });
+      })
   }
-
-  static async getMatchInfo(reqContinent, reqPuuid) {
-    const matchIds = await this.getMatchId(reqContinent, reqPuuid);
-    if (matchIds.success != true) {
-      return { success:false }
-    }
-    const matchInfos = {};
-    for (let i=0; i<matchIds.data.length; i++){
-      const matchId = matchIds.data[i];
-      const matchInfoUrl = `https://${reqContinent}.api.riotgames.com/lol/match/v5/matches/${matchId}`;
-      matchInfos[i] = await superagent.get(matchInfoUrl).set('X-Riot-Token', apiKey)
-        .then(res => {
-          if (res.statusCode == 200) {
-            return { success:true, data:res.body };
-          } else {
-            return { sucess:false };
-          }
-        })
-        .catch(err => {
-          return { success:false, msg:err };
-        });
-    }
-    return matchInfos;
-  }
-
 }
 
 module.exports = RiotApi;

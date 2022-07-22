@@ -2,6 +2,11 @@
 
 const riotapi = require('../../models/riotapi');
 
+const oneMonth = 2592000000;
+const cookieConfig = {
+  maxAge: 100000
+}
+
 const output = {
   home: (req, res) => {
     res.render('home/main');
@@ -10,10 +15,11 @@ const output = {
   showRecord: async (req, res) => {
     const reqServer = req.params.server;
     const reqUserName = encodeURI(req.params.username);
-    const idInfo = await riotapi.getIdInfo(reqServer, reqUserName)
+    const idInfo = await riotapi.getLeagueId(reqServer, reqUserName)
     if (idInfo.success == true) {
-      console.log(idInfo.data);
-      res.render('home/showrecord', { userinfo:idInfo.data });
+      console.log(idInfo.data[0]);
+      idInfo.data[0].profileIconId = idInfo.profileIconId;
+      res.render('home/showrecord', { userinfo:idInfo.data[0] });
     } else {
       res.render('home/notfound');
     }
@@ -21,28 +27,14 @@ const output = {
 }
 
 const process = {
-  getMatchInfo: async (req, res) => {
-    const continent = req.body.continent;
-    const puuid = req.body.puuid;
-    const matchInfos = await riotapi.getMatchInfo(continent, puuid);
-    const infoIndex = Object.keys(matchInfos);
-
-    const newInfos = [];
-
-    try {
-      for (let i = 0; i < infoIndex.length; i++) {
-        if (matchInfos[i].success == true) {
-          newInfos.push(matchInfos[i].data);
-        } else {
-          newInfos.push('false');
-        }
-      }
-      res.send(newInfos);
-    }
-    catch {
-      res.send('false');
-    }
-  }
+  // getLeagueId: async (req, res) => {
+  //   const reqServer = req.params.server;
+  //   const encryptedId = req.params.encryptedId;
+  //   const leagueId = await riotapi.getLeagueId(reqServer, encryptedId);
+  //   if (leagueId.success == true) {
+  //     return res.json(leagueId.data);
+  //   }
+  // }
 }
 
 module.exports = {

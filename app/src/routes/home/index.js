@@ -5,10 +5,10 @@ const router = express.Router();
 
 const ctrl = require('./home.ctrl');
 
-
+//output
 router.get('/', ctrl.output.home);
 router.get('/showrecord/:server/:username', ctrl.output.showRecord);
 
-router.post('/getmatchinfo', ctrl.process.getMatchInfo);
+//process
 
 module.exports = router;

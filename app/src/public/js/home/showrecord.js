@@ -1,43 +1,25 @@
-const getServer = getCookie('reqServer');
-const puuid = 'mTH75uPmrpynAUXlykeAkcFhyhmAERsutZgf1-mLXe30moR7Q8Vizx-I0D3RMqRtxs2_hwYbKUD0wA';
+// const getEncryptedId = async () => {
+//   const res = await fetch('/getencryptedId');
+//   if (res.status == 200) {
+//     const data = await res.json();
+//     return data.encryptedId;
+//   } else {
+//     return new Error('Failed get EncryptedId');
+//   }
+// }
 
-const continents = {
-  america: ['na1', 'br1', 'la1', 'la2'],
-  asia: ['kr', 'jp1'],
-  europe: ['ru', 'tr1', 'eun1', 'euw1'],
-  sea: 'OC1'
-}
+// const getLeagueId = async () => {
+//   const server = getCookie('reqServer');
+//   const encryptedId = await getEncryptedId();
+//   const res = await fetch(`/getleagueid/${server}/${encryptedId}`);
+//   if (res.status == 200) {
+//     const data = await res.json();
+//     return data;
+//   } else {
+//     return new Error('Failed get Leaguid');
+//   }
+// }
 
-function checkContinent(server) {
-  const continentKey = Object.keys(continents);
-
-  for (const c of continentKey) {
-    for (let i = 0; i < continents[c].length; i++) {
-      if (continents[c][i] === server) {
-        return c;
-      }
-    }
-  }
-}
-
-const continent = checkContinent(getServer);
-
-
-
-const req = {
-  continent,
-  puuid
-}
-
-fetch('/getmatchinfo', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify(req)
-})
-.then(res => res.json())
-.then(data => {
-  console.log(data);
-})
-.catch(err => console.error);
+// getLeagueId().then(res => {
+//   console.log(res);
+// })
