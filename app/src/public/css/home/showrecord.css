@@ -130,10 +130,56 @@
   cursor:pointer;
 }
 
-.content__userprofile {
+.main__content {
   display: flex;
+  justify-content: center;
+
+  padding: 30px;
+}
+
+.content__userprofile {
+  height: 200px;
+  width:  1000px;
+
+  background-color: #F5F5F5;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  border: 1px solid rgba(0, 0, 0, 0.22);
+  border-radius: 1em;
+
+  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 .profile__left {
   display: flex;
+  /* justify-content: center; */
+}
+
+.profile__right {
+  display: flex;
+}
+
+.solo-rank,
+.free-rank {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  padding: 0 50px;
+}
+
+.solo-rank-tier,
+.free-rank-tier {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.solo-data,
+.free-data {
+  display: flex;
+  justify-content: center;
 }

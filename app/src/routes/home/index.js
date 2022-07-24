@@ -7,8 +7,10 @@ const ctrl = require('./home.ctrl');
 
 //output
 router.get('/', ctrl.output.home);
-router.get('/showrecord/:server/:username', ctrl.output.showRecord);
+router.get('/:server/user/:username', ctrl.output.showRecord);
 
-//process
+// process
+router.get('/update/version', ctrl.process.getVersion);
+router.get('/update/champion', ctrl.process.getChampion);
 
 module.exports = router;
