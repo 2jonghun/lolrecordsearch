@@ -1,6 +1,7 @@
 'use strict';
 
 const riotapi = require('../../models/riotapi');
+const superagent = require('superagent');
 
 const oneMonth = 2592000000;
 const cookieConfig = {
@@ -24,9 +25,10 @@ const output = {
         console.log(idInfo.info);
         res.render('home/showrecord', { solo:null, free:null, info:idInfo.info });
       }
-      if (!idInfo.free) {
+      else if (!idInfo.free) {
         res.render('home/showrecord', { solo:idInfo.solo, free:null, info:idInfo.info });
         console.log(idInfo.solo);
+        console.log(idInfo.info);
       } else {
         res.render('home/showrecord', { solo:idInfo.solo, free:idInfo.free, info:idInfo.info });
         console.log(idInfo.solo);
@@ -41,10 +43,10 @@ const output = {
 
 const process = {
   getVersion: async (req, res) => {
-    const response = await fetch('https://ddragon.leagueoflegends.com/api/versions.json');
+    const response = await superagent.get('https://ddragon.leagueoflegends.com/api/versions.json');
 
     if (response.status == 200) {
-      const versions = await response.json();
+      const versions = await response.body;
       return res.send(versions[0]);
     } else {
       return res.send(null);
@@ -53,13 +55,13 @@ const process = {
 
   getChampion: async (req, res) => {
     const latestVersion = req.cookies.latestVersion;
-    const response = await fetch(`${RIOTCDNURI}${latestVersion}/data/ko_KR/champion.json`);
+    const response = await superagent.get(`${RIOTCDNURI}${latestVersion}/data/ko_KR/champion.json`);
 
     if (response.status == 200) {
-      const champions = await response.json();
+      const champions = await response.body;
       return res.json(champions);
     } else {
-      return res.send(null);W
+      return res.send(null);
     }
   }
 }

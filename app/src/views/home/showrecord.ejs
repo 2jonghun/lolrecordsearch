@@ -22,59 +22,21 @@
     <div class="main__content">
       <div class="content__userprofile">
         <div class="profile__left">
-          <div class="profile__iconbox">
-            <img class="profileIconId" src="" width="100" height="100" alt="iconId">
-            <span class="summonerLevel"><%= info.summonerLevel %></span>
-          </div>
-          <div class="profile__name">
-            <span class="summonerName"><%= info.summonerName %></span>
-          </div>
+          <%- include('../profile/user-info/userinfo'); -%>
         </div>
         <div class="profile__right">
           <div class="solo-rank">
             <% if (solo) { %>
-            <img class="ranked-emblem" src="/ranked-emblems/<%= solo.tier %>.png" width="100" height="100" alt="ranked-emblem">
-            <div class="solo-rank-tier">
-              <span class="solo-tier"><%= solo.tier %> <%= solo.rank %></span>
-              <span class="solo-lp"><%= solo.leaguePoints %>lp</span>
-            </div>
-            <div class="solo-data">
-              <span class="solo-win"><%= solo.wins %>W</span>
-              <span class="solo-loss"><%= solo.losses %>L</span>
-            </div>
+              <%- include('../profile/solo-rank/soloranked'); -%>
             <% } else { %>
-            <img class="ranked-emblem" src="/ranked-emblems/UNRANKED.png" width="100" height="100" alt="ranked-emblem">
-            <div class="solo-rank-tier">
-              <span class="solo-tier">Unranked</span>
-              <span class="solo-lp">0lp</span>
-            </div>
-            <div class="solo-data">
-              <span class="solo-win">0W</span>
-              <span class="solo-loss">0L</span>
-            </div>
+              <%- include('../profile/solo-rank/solounranked'); -%>
             <% } %>
           </div>
           <div class="free-rank">
             <% if (free) { %>
-            <img class="ranked-emblem" src="/ranked-emblems/<%= free.tier %>.png" width="100" height="100" alt="ranked-emblem">
-            <div class="free-rank-tier">
-              <span class="free-tier"><%= free.tier %> <%= free.rank %></span>
-              <span class="free-lp"><%= free.leaguePoints %>lp</span>
-            </div>
-            <div class="free-data">
-              <span class="free-win"><%= free.wins %>W</span>
-              <span class="free-loss"><%= free.losses %>L</span>
-            </div>
+              <%- include('../profile/free-rank/freeranked'); -%>
             <% } else { %>
-            <img class="ranked-emblem" src="/ranked-emblems/UNRANKED.png" width="100" height="100" alt="ranked-emblem">
-            <div class="free-rank-tier">
-              <span class="free-tier">Unranked</span>
-              <span class="free-lp">0lp</span>
-            </div>
-            <div class="free-data">
-              <span class="free-win">0W</span>
-              <span class="free-loss">0L</span>
-            </div>
+              <%- include('../profile/free-rank/freeunranked'); -%>
             <% } %>
           </div>
         </div>

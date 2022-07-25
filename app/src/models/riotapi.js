@@ -3,8 +3,10 @@
 const superagent = require('superagent');
 const ValueParse = require('./routingValueServeParse');
 
-const apiKey = 'RGAPI-6d5c2fe3-828a-4855-8232-335d9c68944e';
+const apiKey = process.env.RIOTAPIKEY;
 const middleUrl = 'api.riotgames.com'
+
+const profileIconUri = 'http://ddragon.leagueoflegends.com/cdn/12.13.1/img/profileicon/';
 
 class RiotApi {
   static getIdInfo(reqServer, reqId) {
@@ -17,7 +19,7 @@ class RiotApi {
         if (res.statusCode == 200) {
           const data = {
             encryptedId:res.body.id,
-            profileIconId:res.body.profileIconId,
+            profileIcon:`${profileIconUri}${res.body.profileIconId}.png`,
             puuid:res.body.puuid,
             name:res.body.name,
             level:res.body.summonerLevel
@@ -76,7 +78,7 @@ class RiotApi {
     const idInfo = await this.#getIdInfo(reqServer,reqId);
 
     const encryptedId = idInfo.encryptedId;
-    const profileIconId = idInfo.profileIconId;
+    const profileIcon = idInfo.profileIcon;
     const summonerName = idInfo.name;
     const summonerLevel = idInfo.level;
     const puuid = idInfo.puuid;
@@ -88,7 +90,7 @@ class RiotApi {
       .then(async res => {
         if (res.statusCode == 200) {
           const info = {
-            profileIconId: profileIconId,
+            profileIcon: profileIcon,
             summonerName: summonerName,
             summonerLevel: summonerLevel,
             matchList: await this.#getMatchLists(RVSP, puuid)
