@@ -1,6 +1,7 @@
 'use strict';
 
 const superagent = require('superagent');
+const db = require('../config/db');
 const ValueParse = require('./routingValueServeParse');
 
 const apiKey = process.env.RIOTAPIKEY;
@@ -17,12 +18,13 @@ class RiotApi {
       .set('X-Riot-Token', apiKey)
       .then(res => {
         if (res.statusCode == 200) {
+          console.log(res.body);
           const data = {
             encryptedId:res.body.id,
             profileIcon:`${profileIconUri}${res.body.profileIconId}.png`,
             puuid:res.body.puuid,
             name:res.body.name,
-            level:res.body.summonerLevel
+            level:res.body.summonerLevel,
           }
           return { success:true, data };
         } else {
@@ -52,7 +54,6 @@ class RiotApi {
         if (res.statusCode == 200) {
           return { success:true, data:res.body };
         } else {
-          console.log('false');
           return { success:false };
         }
       })
@@ -69,7 +70,12 @@ class RiotApi {
     }
 
     const matchList = await matchLists.data;
-    return matchList;
+    
+    if (matchList.length) {
+      return matchList;
+    } else {
+      return null;
+    }
   }
 
   static async getLeagueId(reqServer, reqId) {
@@ -89,12 +95,16 @@ class RiotApi {
       .set('X-Riot-Token', apiKey)
       .then(async res => {
         if (res.statusCode == 200) {
+          const matchList = await this.#getMatchLists(RVSP, puuid);
+
           const info = {
             profileIcon: profileIcon,
             summonerName: summonerName,
             summonerLevel: summonerLevel,
-            matchList: await this.#getMatchLists(RVSP, puuid)
+            reqServer: reqServer,
+            matchList: matchList,
           };
+
           if (res.body) {
             return { success:true, solo:res.body[0], free:res.body[1], info:info};
           } else {
@@ -106,6 +116,34 @@ class RiotApi {
       })
       .catch(err => {
         return { success:false, msg:err };
+      })
+  }
+
+  static getMatch(reqServer, matchid) {
+    const RVSP = ValueParse.parse(reqServer);
+    const getMatchUrl = `https://${RVSP}.api.riotgames.com/lol/match/v5/matches/${matchid}`
+
+    return superagent
+      .get(getMatchUrl)
+      .set('X-Riot-Token', apiKey)
+      .then(res => {
+        if (res.statusCode == 200) {
+
+          const participants = {
+            // 
+          }
+
+          const matchData = {
+            end_time:res.body.gameStartTimestamp,
+            duration:res.body.duration,
+            queueid:res.body.info.participants.queueid,
+            participants:participants,
+          }
+
+          return { success:true, body:res.body};
+        } else {
+          return { success:false };
+        }
       })
   }
 }

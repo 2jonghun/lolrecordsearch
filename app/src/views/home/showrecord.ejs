@@ -20,6 +20,7 @@
 
     <!-- content -->
     <div class="main__content">
+
       <div class="content__userprofile">
         <div class="profile__left">
           <%- include('../profile/user-info/userinfo'); -%>
@@ -40,6 +41,23 @@
             <% } %>
           </div>
         </div>
+      </div>
+
+      <div class="matchrecord">
+      <% if (info.matchList) { %>
+        <div class="matchrecord__left"></div>
+        <div class="matchrecord__right">
+          <% for(let i = 0; i < info.matchList.length; i++) { %>
+            <div class="match-record-wrraper" data-server="<%= info.reqServer %>" data-matchid="<%= info.matchList[i] %>">
+              <span class="record-<%= i %>text"><%= info.matchList[i] %></span>
+            </div>
+          <% } %>
+        </div>        
+      <% } else { %>
+        <div class="notmatchrecord">
+          <span class="test1">전적이 없습니다.</span>
+        </div>
+      <% } %>
       </div>
     </div>
 

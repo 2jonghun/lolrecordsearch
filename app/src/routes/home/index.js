@@ -12,5 +12,6 @@ router.get('/:server/user/:username', ctrl.output.showRecord);
 // process
 router.get('/update/version', ctrl.process.getVersion);
 router.get('/update/champion', ctrl.process.getChampion);
+router.get('/:server/match/:matchid', ctrl.process.getMatch);
 
 module.exports = router;

@@ -1,12 +1,13 @@
 'use strict';
 
 const riotapi = require('../../models/riotapi');
+const riotcdn = require('../../models/riotcdn');
 const superagent = require('superagent');
 
 const oneMonth = 2592000000;
 const cookieConfig = {
-  maxAge: 100000
-}
+  maxAge: oneMonth
+};
 
 const RIOTCDNURI = 'https://ddragon.leagueoflegends.com/cdn/';
 
@@ -20,9 +21,11 @@ const output = {
     const reqServer = req.params.server;
     const reqUserName = encodeURI(req.params.username);
     const idInfo = await riotapi.getLeagueId(reqServer, reqUserName)
+
     if (idInfo.success == true) {
       if (!idInfo.solo) {
         console.log(idInfo.info);
+        res.cookie('reqServer', reqServer, cookieConfig);
         res.render('home/showrecord', { solo:null, free:null, info:idInfo.info });
       }
       else if (!idInfo.free) {
@@ -43,9 +46,9 @@ const output = {
 
 const process = {
   getVersion: async (req, res) => {
-    const response = await superagent.get('https://ddragon.leagueoflegends.com/api/versions.json');
+    const response = await riotcdn.getVersion();
 
-    if (response.status == 200) {
+    if (response.success == true) {
       const versions = await response.body;
       return res.send(versions[0]);
     } else {
@@ -54,14 +57,26 @@ const process = {
   },
 
   getChampion: async (req, res) => {
-    const latestVersion = req.cookies.latestVersion;
-    const response = await superagent.get(`${RIOTCDNURI}${latestVersion}/data/ko_KR/champion.json`);
+    const latestVersion = req.cookies.latestVersion || '12.13.1';
+    const response = await riotcdn.getChampion(latestVersion);
 
-    if (response.status == 200) {
-      const champions = await response.body;
+    if (response.success == true) {
+      const champions = await response.body.data;
       return res.json(champions);
     } else {
       return res.send(null);
+    }
+  },
+
+  getMatch: async(req, res) => {
+    const reqServer = req.params.server;
+    const matchid = req.params.matchid;
+
+    const response = await riotapi.getMatch(reqServer, matchid);
+
+    if (response.success == true) {
+      // console.log(response.body.info);
+      return res.json(response.body.info);
     }
   }
 }

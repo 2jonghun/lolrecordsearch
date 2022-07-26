@@ -13,19 +13,25 @@ serverList.forEach(server => {
     optionServer.innerText = server;
   }
   targetTag.appendChild(optionServer);
-})
+});
 
 //아이디 받기
 const userName = document.querySelector('.username');
 const reqServer = document.querySelector('.server__list');
 const showRecordBtn = document.querySelector('.show_record_btn');
 
+userName.addEventListener('keydown', event => {
+  if (event.keyCode == 13) {
+    event.preventDefault();
+    showRecordBtn.click();
+  }
+});
+
 showRecordBtn.addEventListener('click', () => {
   if (!userName.value) {
-    userName.focus()
+    userName.focus();
     return
   }
 
-  setCookie('reqServer', reqServer.value, 30)
-  location.href = `/${reqServer.value}/user/${userName.value}`
-})
+  location.href = `/${reqServer.value}/user/${userName.value}`;
+});
