@@ -6,7 +6,7 @@ let CHAMPION;
 getVersion();
 
 async function getVersion() {
-  const res = await fetch('/update/version');
+  const res = await fetch('/get/version');
   if (res.status == 200) {
     const version = await res.text();
     latestVersion = version;
@@ -18,7 +18,7 @@ async function getVersion() {
 getChampion();
 
 async function getChampion() {
-  const res = await fetch('/update/champion');
+  const res = await fetch('/get/championjson');
   if (res.status == 200) {
     const champions = await res.json();
     CHAMPION = champions

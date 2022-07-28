@@ -5,7 +5,6 @@
   <%- include('../layout/head'); -%>
   <link rel="stylesheet" href="/css/home/main.css">
   <script src="/js/home/main.js" defer></script>
-  <script src="/js/home/rotations.js" defer></script>
   <title>LoL Record</title>
 </head>
 
@@ -19,14 +18,19 @@
 
     <!-- content -->
     <div class="main__content">
+      <span class="thisweekrotations">이번 주 로테이션 챔피언</span>
       <div class="content__champrotations">
-        <span class="thisweekrotations">이번 주 로테이션 챔피언</span>
-        <% if (champRotations) { %>
-          <div class="rotations__champbox">
-          <% for (let champ of champRotations) { %>
-              <img src="" alt="rotation_champ" id="<%= champ %>">
+        <% if (rotations) { %>
+          <% for (let rotation of rotations) { %>
+            <div class="rotation__wrapper">
+              <div class="rotations__champbox">
+                <img src="http://ddragon.leagueoflegends.com/cdn/12.14.1/img/champion/<%= rotation[0] %>.png" alt="rotation_champ_<%= rotation[0] %>">
+              </div>
+              <div class="champ_namebox" id="<%= rotation[0] %>">
+                <span class="champ_name"><%= rotation[1] %></span>
+              </div>
+            </div>
           <% } %>
-          </div>
         <% } else { %>
           <span>로테이션 정보 없음</span>
         <% } %>

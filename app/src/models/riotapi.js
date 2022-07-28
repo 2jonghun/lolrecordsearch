@@ -14,6 +14,7 @@ class RiotApi {
     reqServer: 'kr',
     reqUserName: '',
     puuid: '',
+    encryptedId: '',
     serverRegion: 'asia',
   }
 
@@ -39,7 +40,7 @@ class RiotApi {
       .set('X-Riot-Token', apiKey)
       .then(res => {
         if (res.statusCode == 200) return res.body.freeChampionIds;
-        else return undefined;
+        else return 0;
       })
   }
 

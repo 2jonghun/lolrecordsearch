@@ -27,18 +27,6 @@
   height: 50px;
 }
 
-.main__searchbox {
-  align-items: center;
-
-  position: relative;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-
-  padding: 0 35px;
-}
-
 .main__inputbox {
   display: flex;
 

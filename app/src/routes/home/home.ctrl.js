@@ -26,9 +26,35 @@ const serverList = ['KR', 'BR1', 'JP1', 'LA1', 'LA2', 'NA1', 'OC1', 'RU', 'TR1',
 
 const output = {
   home: async (req, res) => {
-    const champRotations = await RIOTAPI.getChampRotations(serverList[5]);
+    const champRotations = await RIOTAPI.getChampRotations(serverList[0]);
+    const champions = RIOTDATA.championsJson;
 
-    res.render('home/main', { serverList, champRotations });
+    if (champions == 0 && champRotations == 0) {
+      rotations = undefined;
+      res.render('home/main', { serverList, rotations });
+    };
+
+    const newChampions = {};
+    const champKeys = Object.keys(champions);
+    champKeys.forEach(champ => {
+      const champKey = champions[champ].key;
+      const champName = champions[champ].name;
+      const champId = champions[champ].id;
+      newChampions[champKey] = {
+        name: champName,
+        id: champId,
+      };
+    });
+    
+    const rotations = [];
+    champRotations.forEach(champKey => {
+      rotations.push([
+        newChampions[champKey].id,
+        newChampions[champKey].name,
+      ]);
+    });
+
+    res.render('home/main', { serverList, rotations });
   },
 
   showRecord: async (req, res) => {
@@ -40,8 +66,6 @@ const output = {
     });
 
     const idInfo = await RIOTAPI.getLeagueId();
-    console.log(RIOTAPI);
-
 
     if (idInfo.success == true) {
       res.cookie('reqServer', reqServer, cookieConfig);
@@ -87,27 +111,6 @@ const process = {
 
     if (runes != 0) return res.json(runes);
     else return res.send(undefined);
-  },
-
-  getChampions: (req, res) => {
-    const champions = RIOTDATA.championsJson;
-
-    if (champions != 0) {
-      const newChampions = {};
-      const champKeys = Object.keys(champions);
-      champKeys.forEach(champ => {
-        const champKey = champions[champ].key;
-        const champName = champions[champ].name;
-        const champId = champions[champ].id;
-        newChampions[champKey] = {
-          name: champName,
-          id: champId,
-        };
-      });
-      return res.json(newChampions);
-    } else {
-      return res.send(undefined);
-    };
   },
 
   getMatch: async (req, res) => {

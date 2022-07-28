@@ -1,5 +1,6 @@
 @import url('./reset.css');
 @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap');
 
 html {
   background-color: #545454;
@@ -121,14 +122,48 @@ html {
   cursor:pointer;
 }
 
-.content__champrotations {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  height: 200px;
-  text-align: center;
+.thisweekrotations {
+  padding: 40px;
 }
 
-.thisweekrotations {
-  padding: 10px;
+.content__champrotations {
+  display: flex;
+}
+
+.rotations__champbox img {
+  width: 68px;
+  height: 68px;
+}
+
+.rotation__wrapper {
+  position: relative;
+}
+
+.champ_namebox {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 63px;
+  height: 20px;
+
+  top: 112%;
+	left: 50%;
+
+  outline-style: groove;
+
+  font-size: 11px;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: bold;
+
+  transform: translate(-50%, -50%);
+
+  background-color: azure;
+}
+
+.champ_namebox span {
+  text-align: center;
+
+  background-color: azure;
 }
