@@ -5,6 +5,7 @@
   <%- include('../layout/head'); -%>
   <link rel="stylesheet" href="/css/home/main.css">
   <script src="/js/home/main.js" defer></script>
+  <script src="/js/home/rotations.js" defer></script>
   <title>LoL Record</title>
 </head>
 
@@ -17,7 +18,20 @@
     </div>
 
     <!-- content -->
-    <div class="main__content"></div>
+    <div class="main__content">
+      <div class="content__champrotations">
+        <span class="thisweekrotations">이번 주 로테이션 챔피언</span>
+        <% if (champRotations) { %>
+          <div class="rotations__champbox">
+          <% for (let champ of champRotations) { %>
+              <img src="" alt="rotation_champ" id="<%= champ %>">
+          <% } %>
+          </div>
+        <% } else { %>
+          <span>로테이션 정보 없음</span>
+        <% } %>
+      </div>
+    </div>
 
     <!-- footer -->
     <div class="main__footer">

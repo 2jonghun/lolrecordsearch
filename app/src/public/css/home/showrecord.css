@@ -130,12 +130,6 @@
   cursor:pointer;
 }
 
-.main__content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
 .content__userprofile,
 .matchrecord {
   margin-top: 30px;

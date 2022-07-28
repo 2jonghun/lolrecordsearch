@@ -5,6 +5,12 @@
   block-size: 85px;
 }
 
+.main__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .main__footer {
   text-align: left;
 
@@ -13,5 +19,5 @@
 
   font-size: 0.8em;
 
-  margin-top:10vh;
+  margin-top:50vh;
 }

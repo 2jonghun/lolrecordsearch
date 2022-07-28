@@ -8,7 +8,18 @@
 <div class="main__searchbox">
   <div class="main__inputbox">
     <select class="server__list">
-    </select>
+      <% if (serverList) { %>
+        <% for(let i = 0; i < serverList.length; i++) { %>
+          <% if (!(serverList[i] === 'KR' || serverList[i] === 'RU')) { %>
+            <option value="<%= serverList[i].toLowerCase() %>"><%= serverList[i].replace('1', '') %></option>
+          <% } else { %>
+            <option value="<%= serverList[i].toLowerCase() %>"><%= serverList[i] %></option>
+          <% } %>
+        <% } %>
+      <% } else { %>
+        <option>not</option>
+      <% } %> 
+    </select>   
     <input type="text" class="username" placeholder="소환사명을 입력하세요">
     <button class="show_record_btn">
       <i class="fa-solid fa-magnifying-glass"></i>

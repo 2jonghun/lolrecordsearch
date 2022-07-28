@@ -2,7 +2,7 @@
 
 const superagent = require('superagent');
 const db = require('../config/db');
-const ValueParse = require('./routingValueServeParse');
+const route = require('../config/serverRoute');
 
 const apiKey = process.env.RIOTAPIKEY;
 const middleUrl = 'api.riotgames.com'
@@ -10,8 +10,41 @@ const middleUrl = 'api.riotgames.com'
 const profileIconUri = 'http://ddragon.leagueoflegends.com/cdn/12.13.1/img/profileicon/';
 
 class RiotApi {
-  static getIdInfo(reqServer, reqId) {
-    const idInfoUrl = `https://${reqServer}.${middleUrl}/lol/summoner/v4/summoners/by-name/${reqId}`
+  reqs = {
+    reqServer: 'kr',
+    reqUserName: '',
+    puuid: '',
+    serverRegion: 'asia',
+  }
+
+  changeProperty(reqs={}) {
+    const keys = Object.keys(reqs);
+    keys.forEach(req => {
+      const preReq = this.reqs[req];
+      const curReq = reqs[req];
+      if (preReq != curReq) { 
+        this.reqs[req] = reqs[req]
+        if (req == 'reqServer') {
+          this.reqs['serverRegion'] = route.serverRoute.getRegion(reqs[req])
+        };
+      };
+    });
+  }
+
+  getChampRotations() {
+    const champRotationsUrl = `https://${this.reqs['reqServer']}.api.riotgames.com/lol/platform/v3/champion-rotations`;
+
+    return superagent
+      .get(champRotationsUrl)
+      .set('X-Riot-Token', apiKey)
+      .then(res => {
+        if (res.statusCode == 200) return res.body.freeChampionIds;
+        else return undefined;
+      })
+  }
+
+  getIdInfo() {
+    const idInfoUrl = `https://${this.reqs['reqServer']}.${middleUrl}/lol/summoner/v4/summoners/by-name/${this.reqs['reqUserName']}`
 
     return superagent
       .get(idInfoUrl)
@@ -36,8 +69,8 @@ class RiotApi {
       });
   }
 
-  static async #getIdInfo(reqServer, reqId) {
-    const idInfo = await this.getIdInfo(reqServer, reqId);
+  async #getIdInfo() {
+    const idInfo = await this.getIdInfo();
 
     if (idInfo.success != true){
       return { success:false, msg:idInfo.msg };
@@ -46,8 +79,8 @@ class RiotApi {
     return idInfo.data;
   }
 
-  static getMatchLists(RVSP, puuid) {
-    const matchLists = `https://${RVSP}.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=20`
+  getMatchLists() {
+    const matchLists = `https://${this.reqs['serverRegion']}.api.riotgames.com/lol/match/v5/matches/by-puuid/${this.reqs['puuid']}/ids?start=0&count=20`
 
     return superagent.get(matchLists).set('X-Riot-Token', apiKey)
       .then(res => {
@@ -62,47 +95,31 @@ class RiotApi {
       })
   }
 
-  static async #getMatchLists(RVSP, puuid) {
-    const matchLists = await this.getMatchLists(RVSP, puuid);
+  async getLeagueId() {
+    const idInfo = await this.#getIdInfo();
 
-    if (matchLists.success != true) {
-      return { success:false, msg:matchLists.msg };
-    }
-
-    const matchList = await matchLists.data;
-    
-    if (matchList.length) {
-      return matchList;
-    } else {
-      return null;
-    }
-  }
-
-  static async getLeagueId(reqServer, reqId) {
-    const RVSP = ValueParse.parse(reqServer);
-
-    const idInfo = await this.#getIdInfo(reqServer,reqId);
-
-    const encryptedId = idInfo.encryptedId;
     const profileIcon = idInfo.profileIcon;
     const summonerName = idInfo.name;
     const summonerLevel = idInfo.level;
-    const puuid = idInfo.puuid;
 
-    const leagueIdUrl = `https://${reqServer}.api.riotgames.com/lol/league/v4/entries/by-summoner/${encryptedId}`
+    this.reqs['puuid'] = idInfo.puuid;
+    this.reqs['encryptedId'] = idInfo.encryptedId;
+
+    const leagueIdUri = `https://${this.reqs['reqServer']}.api.riotgames.com/lol/league/v4/entries/by-summoner/${this.reqs['encryptedId']}`
     return superagent
-      .get(leagueIdUrl)
+      .get(leagueIdUri)
       .set('X-Riot-Token', apiKey)
       .then(async res => {
         if (res.statusCode == 200) {
-          const matchList = await this.#getMatchLists(RVSP, puuid);
+          let matchList = await this.getMatchLists();
+          if (matchList.success != true) matchList = undefined;
 
           const info = {
             profileIcon: profileIcon,
             summonerName: summonerName,
             summonerLevel: summonerLevel,
-            reqServer: reqServer,
-            matchList: matchList,
+            reqServer: this.reqs['reqServer'],
+            matchList: matchList.data,
           };
 
           if (res.body) {
@@ -119,9 +136,8 @@ class RiotApi {
       })
   }
 
-  static getMatch(reqServer, matchid) {
-    const RVSP = ValueParse.parse(reqServer);
-    const getMatchUrl = `https://${RVSP}.api.riotgames.com/lol/match/v5/matches/${matchid}`
+  getMatch(matchid) {
+    const getMatchUrl = `https://${this.reqs['serverRegion']}.api.riotgames.com/lol/match/v5/matches/${matchid}`
 
     return superagent
       .get(getMatchUrl)

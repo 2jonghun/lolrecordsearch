@@ -120,3 +120,15 @@ html {
 
   cursor:pointer;
 }
+
+.content__champrotations {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 200px;
+  text-align: center;
+}
+
+.thisweekrotations {
+  padding: 10px;
+}

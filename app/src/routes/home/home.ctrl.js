@@ -1,87 +1,132 @@
 'use strict';
 
-const riotapi = require('../../models/riotapi');
-const riotcdn = require('../../models/riotcdn');
+const RiotApi = require('../../models/riotapi');
+const RiotData = require('../../models/riotdata');
+
 const superagent = require('superagent');
+const { off } = require('superagent');
+
+const updateCycleHour = 1;
+
+const RIOTDATA = new RiotData();
+RIOTDATA.initialize();
+
+const RIOTAPI = new RiotApi();
+
+// setInterval(() => {
+//   RIOTDATA.update();
+// }, updateCycleHour * 60 * 60 * 1000);
 
 const oneMonth = 2592000000;
 const cookieConfig = {
   maxAge: oneMonth
 };
 
-const RIOTCDNURI = 'https://ddragon.leagueoflegends.com/cdn/';
-
+const serverList = ['KR', 'BR1', 'JP1', 'LA1', 'LA2', 'NA1', 'OC1', 'RU', 'TR1', 'EUN1', 'EUW1'];
 
 const output = {
-  home: (req, res) => {
-    res.render('home/main');
+  home: async (req, res) => {
+    const champRotations = await RIOTAPI.getChampRotations(serverList[5]);
+
+    res.render('home/main', { serverList, champRotations });
   },
 
   showRecord: async (req, res) => {
     const reqServer = req.params.server;
     const reqUserName = encodeURI(req.params.username);
-    const idInfo = await riotapi.getLeagueId(reqServer, reqUserName)
+    RIOTAPI.changeProperty({
+      reqServer,
+      reqUserName,
+    });
+
+    const idInfo = await RIOTAPI.getLeagueId();
+    console.log(RIOTAPI);
+
 
     if (idInfo.success == true) {
+      res.cookie('reqServer', reqServer, cookieConfig);
       if (!idInfo.solo) {
         console.log(idInfo.info);
-        res.cookie('reqServer', reqServer, cookieConfig);
-        res.render('home/showrecord', { solo:null, free:null, info:idInfo.info });
+        res.render('home/showrecord', { solo:null, free:null, info:idInfo.info, serverList });
       }
       else if (!idInfo.free) {
-        res.render('home/showrecord', { solo:idInfo.solo, free:null, info:idInfo.info });
+        res.render('home/showrecord', { solo:idInfo.solo, free:null, info:idInfo.info, serverList });
         console.log(idInfo.solo);
         console.log(idInfo.info);
       } else {
-        res.render('home/showrecord', { solo:idInfo.solo, free:idInfo.free, info:idInfo.info });
+        res.render('home/showrecord', { solo:idInfo.solo, free:idInfo.free, info:idInfo.info, serverList });
         console.log(idInfo.solo);
         console.log(idInfo.free);
         console.log(idInfo.info);
       }
     } else {
-      res.render('home/notfound');
+      res.render('home/notfound', { serverList });
     }
   }
-}
+};
 
 const process = {
-  getVersion: async (req, res) => {
-    const response = await riotcdn.getVersion();
-
-    if (response.success == true) {
-      const versions = await response.body;
-      return res.send(versions[0]);
+  getVersion: (req, res) => {
+    const version = RIOTDATA.latestVersion;
+    if (version != 0) {
+      return res.send(version);
     } else {
-      return res.send(null);
-    }
+      return res.send(undefined);
+    };
   },
 
-  getChampion: async (req, res) => {
-    const latestVersion = req.cookies.latestVersion || '12.13.1';
-    const response = await riotcdn.getChampion(latestVersion);
+  getChampionJson: (req, res) => {
+    const championjson = RIOTDATA.championsJson; 
 
-    if (response.success == true) {
-      const champions = await response.body.data;
-      return res.json(champions);
-    } else {
-      return res.send(null);
-    }
+    if(championjson != 0) return res.send(championjson);
+    else return res.send(undefined);
   },
 
-  getMatch: async(req, res) => {
+  getRunes: (req, res) => {
+    const runes = RIOTDATA.runesJson;
+
+    if (runes != 0) return res.json(runes);
+    else return res.send(undefined);
+  },
+
+  getChampions: (req, res) => {
+    const champions = RIOTDATA.championsJson;
+
+    if (champions != 0) {
+      const newChampions = {};
+      const champKeys = Object.keys(champions);
+      champKeys.forEach(champ => {
+        const champKey = champions[champ].key;
+        const champName = champions[champ].name;
+        const champId = champions[champ].id;
+        newChampions[champKey] = {
+          name: champName,
+          id: champId,
+        };
+      });
+      return res.json(newChampions);
+    } else {
+      return res.send(undefined);
+    };
+  },
+
+  getMatch: async (req, res) => {
     const reqServer = req.params.server;
+    RIOTAPI.changeProperty({ 
+      reqServer,
+    });
     const matchid = req.params.matchid;
 
-    const response = await riotapi.getMatch(reqServer, matchid);
+    const response = await RIOTAPI.getMatch(matchid);
 
     if (response.success == true) {
-      // console.log(response.body.info);
       return res.json(response.body.info);
     }
   }
-}
+};
 
 module.exports = {
   output,
   process,
-}
+  RIOTDATA,
+};

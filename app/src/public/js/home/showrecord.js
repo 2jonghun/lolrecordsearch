@@ -12,7 +12,7 @@ async function getMatch() {
     
     if (res.status == 200) {
       const matchData = await res.json();
-      break
+      break;
     }
   }
 }
