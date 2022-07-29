@@ -122,9 +122,8 @@ const process = {
 
     const response = await RIOTAPI.getMatch(matchid);
 
-    if (response.success == true) {
-      return res.json(response.body.info);
-    }
+    if (response.success == true) return res.json(response.body);
+    else return res.send(undefined);
   }
 };
 

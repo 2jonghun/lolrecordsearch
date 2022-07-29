@@ -145,23 +145,66 @@ class RiotApi {
       .set('X-Riot-Token', apiKey)
       .then(res => {
         if (res.statusCode == 200) {
+          const body = res.body;
+          const participants = [];
+          
+          for (let i=0; i<body.info.participants.length; i++) {
+            participants.push(
+              this.#parseParticipants(body.info.participants, i)
+            );
+          };
 
-          const participants = {
-            // 
-          }
 
           const matchData = {
-            end_time:res.body.gameStartTimestamp,
-            duration:res.body.duration,
-            queueid:res.body.info.participants.queueid,
+            start_time:body.info.gameStartTimestamp,
+            duration:body.info.gameDuration,
+            queueid:body.info.queueId,
+            team100_win:body.info.teams[0].win,
+            team200_win:body.info.teams[1].win,
             participants:participants,
           }
 
-          return { success:true, body:res.body};
+          console.log(matchData);
+
+          return { success:true, body:matchData};
         } else {
           return { success:false };
         }
       })
+  }
+
+  #parseParticipants(participants, i) {
+    const newParticipants = {
+      summoner_name:participants[i].summonerName,
+      kills:participants[i].kills,
+      deaths:participants[i].deaths,
+      assists:participants[i].assists,
+      kda:+(Math.round(participants[i].challenges.kda+"e+2")+"e-2"),
+      champ_level:participants[i].champLevel,
+      champ_id:participants[i].championId,
+      rune_main:participants[i].perks.styles[0].style,
+      rune_sub:participants[i].perks.styles[1].style,
+      spell1:participants[i].spell1Casts,
+      spell2:participants[i].spell2Casts,
+      item0:participants[i].item0,
+      item1:participants[i].item1,
+      item2:participants[i].item2,
+      item3:participants[i].item3,
+      item4:participants[i].item4,
+      item5:participants[i].item5,
+      item6:participants[i].item6,
+      damage_dealt:participants[i].totalDamageDealtToChampions,
+      minions_killed:participants[i].totalMinionsKilled
+        +participants[i].neutralMinionsKilled,
+      vision_score:participants[i].visionScore,
+      multi_kill:participants[i].challenges.multikills,
+      win:'',
+    };
+
+    if (participants[i].win == true) newParticipants.win = 1;
+    else newParticipants.win = 0;
+
+    return newParticipants;
   }
 }
 
