@@ -17,5 +17,5 @@ showRecordBtn.addEventListener('click', () => {
     return
   }
 
-  location.href = `/${reqServer.value}/user/${userName.value}`;
+  location.href = `/summoners/${reqServer.value}/${userName.value}`;
 });

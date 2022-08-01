@@ -5,9 +5,7 @@ const db = require('../config/db');
 const route = require('../config/serverRoute');
 
 const apiKey = process.env.RIOTAPIKEY;
-const middleUrl = 'api.riotgames.com'
-
-const profileIconUri = 'http://ddragon.leagueoflegends.com/cdn/12.13.1/img/profileicon/';
+const middleUri = 'api.riotgames.com'
 
 class RiotApi {
   reqs = {
@@ -33,19 +31,22 @@ class RiotApi {
   }
 
   getChampRotations() {
-    const champRotationsUrl = `https://${this.reqs['reqServer']}.api.riotgames.com/lol/platform/v3/champion-rotations`;
+    const champRotationsUri = `https://${this.reqs['reqServer']}.api.riotgames.com/lol/platform/v3/champion-rotations`;
 
     return superagent
-      .get(champRotationsUrl)
+      .get(champRotationsUri)
       .set('X-Riot-Token', apiKey)
       .then(res => {
-        if (res.statusCode == 200) return res.body.freeChampionIds;
-        else return 0;
+        if (res.statusCode == 200) return { success:true, data:res.body.freeChampionIds };
+        else return { success:false };
+      })
+      .catch(err => {
+        return { success:false, msg:err.response.error };
       })
   }
 
   getIdInfo() {
-    const idInfoUrl = `https://${this.reqs['reqServer']}.${middleUrl}/lol/summoner/v4/summoners/by-name/${this.reqs['reqUserName']}`
+    const idInfoUrl = `https://${this.reqs['reqServer']}.${middleUri}/lol/summoner/v4/summoners/by-name/${this.reqs['reqUserName']}`
 
     return superagent
       .get(idInfoUrl)
@@ -55,14 +56,14 @@ class RiotApi {
           console.log(res.body);
           const data = {
             encryptedId:res.body.id,
-            profileIcon:`${profileIconUri}${res.body.profileIconId}.png`,
+            profileIconId:res.body.profileIconId,
             puuid:res.body.puuid,
             name:res.body.name,
             level:res.body.summonerLevel,
           }
           return { success:true, data };
         } else {
-          return { success:false };
+          return { success:false, msg:res.status };
          }
        })
       .catch(err => {
@@ -70,18 +71,8 @@ class RiotApi {
       });
   }
 
-  async #getIdInfo() {
-    const idInfo = await this.getIdInfo();
-
-    if (idInfo.success != true){
-      return { success:false, msg:idInfo.msg };
-    }
-
-    return idInfo.data;
-  }
-
   getMatchLists() {
-    const matchLists = `https://${this.reqs['serverRegion']}.api.riotgames.com/lol/match/v5/matches/by-puuid/${this.reqs['puuid']}/ids?start=0&count=20`
+    const matchLists = `https://${this.reqs['serverRegion']}.api.riotgames.com/lol/match/v5/matches/by-puuid/${this.reqs['puuid']}/ids?start=0&count=6`
 
     return superagent.get(matchLists).set('X-Riot-Token', apiKey)
       .then(res => {
@@ -97,14 +88,15 @@ class RiotApi {
   }
 
   async getLeagueId() {
-    const idInfo = await this.#getIdInfo();
+    const idInfo = await this.getIdInfo();
+    if (idInfo.success != true) return { success:false, msg:idInfo.msg}
 
-    const profileIcon = idInfo.profileIcon;
-    const summonerName = idInfo.name;
-    const summonerLevel = idInfo.level;
+    const profileIconId = idInfo.data.profileIconId;
+    const summonerName = idInfo.data.name;
+    const summonerLevel = idInfo.data.level;
 
-    this.reqs['puuid'] = idInfo.puuid;
-    this.reqs['encryptedId'] = idInfo.encryptedId;
+    this.reqs['puuid'] = idInfo.data.puuid;
+    this.reqs['encryptedId'] = idInfo.data.encryptedId;
 
     const leagueIdUri = `https://${this.reqs['reqServer']}.api.riotgames.com/lol/league/v4/entries/by-summoner/${this.reqs['encryptedId']}`
     return superagent
@@ -116,12 +108,13 @@ class RiotApi {
           if (matchList.success != true) matchList = undefined;
 
           const info = {
-            profileIcon: profileIcon,
-            summonerName: summonerName,
-            summonerLevel: summonerLevel,
+            profileIconId,
+            summonerName,
+            summonerLevel,
             reqServer: this.reqs['reqServer'],
             matchList: matchList.data,
           };
+          console.log(res.body);
 
           if (res.body) {
             return { success:true, solo:res.body[0], free:res.body[1], info:info};
@@ -138,10 +131,10 @@ class RiotApi {
   }
 
   getMatch(matchid) {
-    const getMatchUrl = `https://${this.reqs['serverRegion']}.api.riotgames.com/lol/match/v5/matches/${matchid}`
+    const matchUri = `https://${this.reqs['serverRegion']}.api.riotgames.com/lol/match/v5/matches/${matchid}`;
 
     return superagent
-      .get(getMatchUrl)
+      .get(matchUri)
       .set('X-Riot-Token', apiKey)
       .then(res => {
         if (res.statusCode == 200) {
@@ -154,6 +147,7 @@ class RiotApi {
             );
           };
 
+          if(!body.info.gameEndTimestamp) body.info.gameDuration /= 1000;
 
           const matchData = {
             start_time:body.info.gameStartTimestamp,
@@ -161,12 +155,10 @@ class RiotApi {
             queueid:body.info.queueId,
             team100_win:body.info.teams[0].win,
             team200_win:body.info.teams[1].win,
-            participants:participants,
+            participants,
           }
 
-          console.log(matchData);
-
-          return { success:true, body:matchData};
+          return { success:true, body:matchData };
         } else {
           return { success:false };
         }
@@ -174,35 +166,67 @@ class RiotApi {
   }
 
   #parseParticipants(participants, i) {
+    const getFloatFixed = (value, fixed) => {
+      if (value == 0) return 
+      return Number(parseFloat(+(Math.round(value+"e+2")+"e-2")).toFixed(fixed));
+    };
+
+    const summonerName = participants[i].summonerName;
+    const kills = participants[i].kills;
+    const deaths = participants[i].deaths;
+    const assists = participants[i].assists;
+    let kda;
+    if (deaths == 0) kda = kills+assists;
+    else kda = getFloatFixed((kills+assists)/deaths, 2);
+    const champLevel = participants[i].champLevel;
+    const champId = participants[i].championId;
+    const runeMain = participants[i].perks.styles[0].style;
+    const runeSub = participants[i].perks.styles[1].style;
+    const spell1 = participants[i].spell1Casts;
+    const spell2 = participants[i].spell2Casts
+    const item0 = participants[i].item0;
+    const item1 = participants[i].item1;
+    const item2 = participants[i].item2;
+    const item3 = participants[i].item3;
+    const item4 = participants[i].item4;
+    const item5 = participants[i].item5;
+    const item6 = participants[i].item6;
+    const damageDealt = participants[i].totalDamageDealtToChampions;
+    const minionsKilled = participants[i].totalMinionsKilled
+      +participants[i].neutralMinionsKilled;
+    const visionScore = participants[i].visionScore;
+    
+    let multiKill;
+    if (!participants[i].challenges) multiKill = 0;
+    else multiKill = participants[i].challenges.multikills;
+
     const newParticipants = {
-      summoner_name:participants[i].summonerName,
-      kills:participants[i].kills,
-      deaths:participants[i].deaths,
-      assists:participants[i].assists,
-      kda:+(Math.round(participants[i].challenges.kda+"e+2")+"e-2"),
-      champ_level:participants[i].champLevel,
-      champ_id:participants[i].championId,
-      rune_main:participants[i].perks.styles[0].style,
-      rune_sub:participants[i].perks.styles[1].style,
-      spell1:participants[i].spell1Casts,
-      spell2:participants[i].spell2Casts,
-      item0:participants[i].item0,
-      item1:participants[i].item1,
-      item2:participants[i].item2,
-      item3:participants[i].item3,
-      item4:participants[i].item4,
-      item5:participants[i].item5,
-      item6:participants[i].item6,
-      damage_dealt:participants[i].totalDamageDealtToChampions,
-      minions_killed:participants[i].totalMinionsKilled
-        +participants[i].neutralMinionsKilled,
-      vision_score:participants[i].visionScore,
-      multi_kill:participants[i].challenges.multikills,
-      win:'',
+      kills,
+      deaths,
+      assists,
+      kda,
+      spell1,
+      spell2,
+      item0,
+      item1,
+      item2,
+      item3,
+      item4,
+      item5,
+      item6,
+      multi_kill:multiKill,
+      summoner_name:summonerName,
+      damage_dealt:damageDealt,
+      minions_killed:minionsKilled,
+      vision_score:visionScore,
+      champ_level:champLevel,
+      champ_id:champId,
+      rune_main:runeMain,
+      rune_sub:runeSub,
+      win:0,
     };
 
     if (participants[i].win == true) newParticipants.win = 1;
-    else newParticipants.win = 0;
 
     return newParticipants;
   }

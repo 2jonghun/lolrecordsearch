@@ -1,20 +1,22 @@
-async function getMatch() {
-  const matchids = document.querySelectorAll('.match-record-wrraper');
+const matchidTags = document.querySelectorAll('.match-record-wrraper');
 
-  if (!matchids.length) {
-    return;
+const matchids = [];
+
+matchidTags.forEach(matchid => {
+  const getMatch = (server, matchid) => {
+    return fetch(`/${server}/match/${matchid}`)
   }
 
-  const reqServer = matchids[0].dataset.server;
-  for (let i=0; i<matchids.length; i++) {
-    const matchid = matchids[i].dataset.matchid;
-    const res = await fetch(`/${reqServer}/match/${matchid}`);
-    
-    if (res.status == 200) {
-      const matchData = await res.json();
-      console.log(matchData);
+  matchids.push(
+    getMatch(matchid.dataset.server, matchid.dataset.matchid)
+  );
+});
+
+Promise.all(matchids)
+  .then(async res => {
+    for (let i=0; i<res.length; i++) {
+      console.log(await res[i].json());
     }
-  }
-}
+  })
 
-getMatch();
+console.log('test');

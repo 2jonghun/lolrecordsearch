@@ -10,6 +10,7 @@ class RiotData {
   runesJson = {};
   championsJson = {};
   champions = [];
+  checkChampRotations = {};
 
   initialize() {
     this.update();
@@ -24,8 +25,21 @@ class RiotData {
       this.riotCdnUri = `${DDRRAGON_BASE_URI}/cdn/${this.latestVersion}`;
     };
 
-    const championsJson = await this.getChampions();
-    if (championsJson != 0) this.championsJson = championsJson;
+    const championsData = await this.getChampions();
+    if (championsData != 0) {
+      this.championsJson = championsData[0];
+      this.champions = championsData[1];
+  
+      this.champions.forEach(champ => {
+        const champKey = this.championsJson[champ].key;
+        const champName = this.championsJson[champ].name;
+        const champId = this.championsJson[champ].id;
+        this.checkChampRotations[champKey] = {
+          name: champName,
+          id: champId,
+        };
+      });
+    }
 
     const runesJson = await this.getRunes();
     if (runesJson != 0) this.runesJson = runesJson;
@@ -50,7 +64,7 @@ class RiotData {
 
       })
       .catch(err => {
-        console.log('Failed get version Error:', err);
+        console.log('Failed get version', err);
         return 0
       });
   }
@@ -77,13 +91,14 @@ class RiotData {
         if (latestChamp.toString() == [] || this.champions.toString() == []) {
           latestChamp = undefined;
         }
+
         this.champions = champions;
         console.log('Success get Champions Latest Update Champion:', latestChamp);
-        return championsJson;
+        return [championsJson, champions];
 
       })
       .catch(err => {
-        console.log('Failed get Champions Error:', err);
+        console.log('Failed get Champions', err);
         return 0
       });
   }
@@ -105,9 +120,13 @@ class RiotData {
         return runesJson;
       })
       .catch(err => {
-        console.log('Failed get Runes Error', err);
+        console.log('Failed get Runes', err);
         return 0
       })
+  }
+
+  getProfileIcon(profileIconId) {
+    return `${this.riotCdnUri}/img/profileicon/${profileIconId}.png`
   }
 }
 

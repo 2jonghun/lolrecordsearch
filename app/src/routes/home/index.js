@@ -7,7 +7,7 @@ const ctrl = require('./home.ctrl');
 
 //output
 router.get('/', ctrl.output.home);
-router.get('/:server/user/:username', ctrl.output.showRecord);
+router.get('/summoners/:server/:username', ctrl.output.showRecord);
 
 // process
 router.get('/get/version', ctrl.process.getVersion);

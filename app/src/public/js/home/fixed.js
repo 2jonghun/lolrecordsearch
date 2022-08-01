@@ -10,7 +10,6 @@ async function getVersion() {
   if (res.status == 200) {
     const version = await res.text();
     latestVersion = version;
-    setCookie('latestVersion', version);
     console.log(latestVersion);
   }
 }
