@@ -72,7 +72,7 @@ class RiotApi {
   }
 
   getMatchLists() {
-    const matchLists = `https://${this.reqs['serverRegion']}.api.riotgames.com/lol/match/v5/matches/by-puuid/${this.reqs['puuid']}/ids?start=0&count=6`
+    const matchLists = `https://${this.reqs['serverRegion']}.api.riotgames.com/lol/match/v5/matches/by-puuid/${this.reqs['puuid']}/ids?start=0&count=2`
 
     return superagent.get(matchLists).set('X-Riot-Token', apiKey)
       .then(res => {

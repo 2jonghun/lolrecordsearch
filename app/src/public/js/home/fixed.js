@@ -26,15 +26,15 @@ async function getChampion() {
 }
 
 const QUEUETYPE = {
-  400: 'norm', //Normal Draft Pick
+  400: 'norm',
   420: 'solo',
   430: 'norm',
   440: 'flex',
   450: 'aram',
   700: 'clash',
-  800: 'ai',  // Deprecated
-  810: 'ai',  // Deprecated
-  820: 'ai',  // Deprecated
+  800: 'ai',
+  810: 'ai',
+  820: 'ai',
   830: 'ai',
   840: 'ai',
   850: 'ai',
@@ -42,7 +42,7 @@ const QUEUETYPE = {
   920: 'poro',
   1020: 'ofa',
   1300: 'nbg',
-  1400: 'usb', // Ultimate Spellbook
+  1400: 'usb',
   2000: 'tut',
   2010: 'tut',
   2020: 'tut',
@@ -63,6 +63,11 @@ const ko = {
 	"etc": "기타",
 	"clash": "격전"
 }
+
+const getFloatFixed = (value, fixed) => {
+  if (value == 0) return 
+  return Number(parseFloat(+(Math.round(value+"e+2")+"e-2")).toFixed(fixed));
+};
 
 function timeForToday(value) {
   const today = new Date();

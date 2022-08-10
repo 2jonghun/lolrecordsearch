@@ -18,19 +18,27 @@ const RIOTAPI = new RiotApi();
 
 const oneMonth = 2592000000;
 const cookieConfig = {
-  maxAge: oneMonth
+  maxAge: oneMonth,
+};
+const singedCookieConfig = {
+  maxAge: oneMonth,
+  signed: true
 };
 
-const serverList = ['KR', 'BR1', 'JP1', 'LA1', 'LA2', 'NA1', 'OC1', 'RU', 'TR1', 'EUN1', 'EUW1'];
+const serverList = ['kr', 'br1', 'jp1', 'la1', 'la2', 'na1', 'oc1', 'ru', 'tr1', 'eun1', 'euw1'];
 
 const output = {
   home: async (req, res) => {
-    const champRotations = await RIOTAPI.getChampRotations(serverList[0]);
+    let latestServer;
+    if (!req.cookies['latest-server']) latestServer = serverList[0];
+    else latestServer = req.cookies['latest-server'];
+  
+    const champRotations = await RIOTAPI.getChampRotations(latestServer);
     const checkChampRotations = RIOTDATA.checkChampRotations;
 
     if (checkChampRotations == 0 || champRotations.success == false) {
-      console.log(champRotations.msg);
-      return res.render('home/main', { serverList, rotations:undefined });
+      // console.log(champRotations.msg);
+      return res.render('home/main', { serverList, latestServer, rotations:undefined });
     };
     
     const rotations = [];
@@ -41,12 +49,15 @@ const output = {
       ]);
     });
 
-    return res.render('home/main', { serverList, rotations });
+    return res.render('home/main', { serverList, latestServer, rotations });
   },
 
   showRecord: async (req, res) => {
     const reqServer = req.params.server;
     const reqUserName = encodeURI(req.params.username);
+
+    res.cookie('latest-server', reqServer, cookieConfig);
+
     RIOTAPI.changeProperty({
       reqServer,
       reqUserName,
@@ -60,20 +71,20 @@ const output = {
     if (idInfo.success == true) {
       if (!idInfo.solo) {
         console.log(idInfo.info);
-        return res.render('home/showrecord', { solo:null, free:null, info:idInfo.info, serverList });
+        return res.render('home/showrecord', { solo:null, free:null, info:idInfo.info, serverList, latestServer:reqServer });
       }
       else if (!idInfo.free) {
-        return res.render('home/showrecord', { solo:idInfo.solo, free:null, info:idInfo.info, serverList });
+        return res.render('home/showrecord', { solo:idInfo.solo, free:null, info:idInfo.info, serverList, latestServer:reqServer });
         console.log(idInfo.solo);
         console.log(idInfo.info);
       } else {
-        return res.render('home/showrecord', { solo:idInfo.solo, free:idInfo.free, info:idInfo.info, serverList });
+        return res.render('home/showrecord', { solo:idInfo.solo, free:idInfo.free, info:idInfo.info, serverList, latestServer:reqServer });
         console.log(idInfo.solo);
         console.log(idInfo.free);
         console.log(idInfo.info);
       }
     } else {
-      return res.render('home/notfound', { serverList });
+      return res.render('home/notfound', { serverList, latestServer:reqServer });
     }
   }
 };

@@ -11,9 +11,17 @@
       <% if (serverList) { %>
         <% for(let i = 0; i < serverList.length; i++) { %>
           <% if (!(serverList[i] === 'KR' || serverList[i] === 'RU')) { %>
-            <option value="<%= serverList[i].toLowerCase() %>"><%= serverList[i].replace('1', '') %></option>
+            <% if (serverList[i] == latestServer) { %>
+              <option value="<%= serverList[i] %>" selected><%= serverList[i].replace('1', '').toUpperCase() %></option>
+            <% } else { %>
+              <option value="<%= serverList[i] %>"><%= serverList[i].replace('1', '').toUpperCase() %></option>
+            <% } %>
           <% } else { %>
-            <option value="<%= serverList[i].toLowerCase() %>"><%= serverList[i] %></option>
+            <% if (serverList[i] == latestServer) { %>
+              <option value="<%= serverList[i] %>" selected><%= serverList[i].toUpperCase() %></option>
+            <% } else { %>
+              <option value="<%= serverList[i] %>"><%= serverList[i].toUpperCase() %></option>
+            <% } %>
           <% } %>
         <% } %>
       <% } else { %>
