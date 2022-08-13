@@ -32,7 +32,6 @@ async function getRune() {
   if (res.status == 200) {
     const runes = await res.json();
     RUNE = runes;
-    console.log(RUNE)
   }
 }
 

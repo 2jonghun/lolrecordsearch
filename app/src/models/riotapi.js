@@ -72,7 +72,7 @@ class RiotApi {
   }
 
   getMatchLists() {
-    const matchLists = `https://${this.reqs['serverRegion']}.api.riotgames.com/lol/match/v5/matches/by-puuid/${this.reqs['puuid']}/ids?start=0&count=2`
+    const matchLists = `https://${this.reqs['serverRegion']}.api.riotgames.com/lol/match/v5/matches/by-puuid/${this.reqs['puuid']}/ids?start=0&count=5`
 
     return superagent.get(matchLists).set('X-Riot-Token', apiKey)
       .then(res => {
@@ -171,38 +171,40 @@ class RiotApi {
       return Number(parseFloat(+(Math.round(value+"e+2")+"e-2")).toFixed(fixed));
     };
 
-    console.log(participants);
+    const p = participants[i];
 
-    const summonerName = participants[i].summonerName;
-    const kills = participants[i].kills;
-    const deaths = participants[i].deaths;
-    const assists = participants[i].assists;
+    const summonerName = p.summonerName;
+    const kills = p.kills;
+    const deaths = p.deaths;
+    const assists = p.assists;
     let kda;
     if (deaths == 0) kda = kills+assists;
     else kda = getFloatFixed((kills+assists)/deaths, 2);
-    const champLevel = participants[i].champLevel;
-    const champKey = participants[i].championId;
-    const runeMain = participants[i].perks.styles[0].style;
-    const runeSub = participants[i].perks.styles[1].style;
-    const spell1 = participants[i].summoner1Id;
-    const spell2 = participants[i].summoner2Id
-    const item0 = participants[i].item0;
-    const item1 = participants[i].item1;
-    const item2 = participants[i].item2;
-    const item3 = participants[i].item3;
-    const item4 = participants[i].item4;
-    const item5 = participants[i].item5;
-    const item6 = participants[i].item6;
-    const goldEarned = participants[i].goldEarned;
-    const damageDealt = participants[i].totalDamageDealtToChampions;
-    const minionsKilled = participants[i].totalMinionsKilled
-      +participants[i].neutralMinionsKilled;
-    const visionScore = participants[i].visionScore;
-    const teamId = participants[i].teamId;
+    const champLevel = p.champLevel;
+    const champKey = p.championId;
+    const runeMain = [p.perks.styles[0].style, 
+      p.perks.styles[0].selections[0].perk];
+    const runeSub = p.perks.styles[1].style;
+    const spell1 = p.summoner1Id;
+    const spell2 = p.summoner2Id
+    const item0 = p.item0;
+    const item1 = p.item1;
+    const item2 = p.item2;
+    const item3 = p.item3;
+    const item4 = p.item4;
+    const item5 = p.item5;
+    const item6 = p.item6;
+    const goldEarned = p.goldEarned;
+    const damageDealt = p.totalDamageDealtToChampions;
+    const minionsKilled = p.totalMinionsKilled
+      +p.neutralMinionsKilled;
+    const visionScore = p.visionScore;
+    const visionWardsBought = p.visionWardsBoughtInGame;
+    const teamId = p.teamId;
     
     let multiKill;
-    if (!participants[i].challenges) multiKill = 0;
-    else multiKill = participants[i].challenges.multikills;
+    if (!p.challenges) multiKill = 0;
+    else multiKill = p.challenges.multikills;
 
     const newParticipants = {
       kills,
@@ -224,6 +226,7 @@ class RiotApi {
       damage_dealt:damageDealt,
       minions_killed:minionsKilled,
       vision_score:visionScore,
+      vision_wards_bought:visionWardsBought,
       champ_level:champLevel,
       champ_key:champKey,
       rune_main:runeMain,
@@ -232,7 +235,7 @@ class RiotApi {
       win:0,
     };
 
-    if (participants[i].win == true) newParticipants.win = 1;
+    if (p.win == true) newParticipants.win = 1;
 
     return newParticipants;
   }

@@ -44,8 +44,8 @@ const output = {
     const rotations = [];
     champRotations.data.forEach(champKey => {
       rotations.push([
-        checkChampRotations[champKey].id,
-        checkChampRotations[champKey].name,
+        checkChamp[champKey].id,
+        checkChamp[champKey].name,
       ]);
     });
 
