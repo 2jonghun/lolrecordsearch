@@ -1,7 +1,7 @@
 'use strict';
 
 const superagent = require('superagent');
-const db = require('../config/db');
+// const db = require('../config/db');
 const route = require('../config/serverRoute');
 
 const apiKey = process.env.RIOTAPIKEY;
@@ -41,7 +41,7 @@ class RiotApi {
         else return { success:false };
       })
       .catch(err => {
-        return { success:false, msg:err.response.error };
+        return { success:false, msg:err };
       })
   }
 
@@ -171,6 +171,8 @@ class RiotApi {
       return Number(parseFloat(+(Math.round(value+"e+2")+"e-2")).toFixed(fixed));
     };
 
+    console.log(participants);
+
     const summonerName = participants[i].summonerName;
     const kills = participants[i].kills;
     const deaths = participants[i].deaths;
@@ -179,11 +181,11 @@ class RiotApi {
     if (deaths == 0) kda = kills+assists;
     else kda = getFloatFixed((kills+assists)/deaths, 2);
     const champLevel = participants[i].champLevel;
-    const champId = participants[i].championId;
+    const champKey = participants[i].championId;
     const runeMain = participants[i].perks.styles[0].style;
     const runeSub = participants[i].perks.styles[1].style;
-    const spell1 = participants[i].spell1Casts;
-    const spell2 = participants[i].spell2Casts
+    const spell1 = participants[i].summoner1Id;
+    const spell2 = participants[i].summoner2Id
     const item0 = participants[i].item0;
     const item1 = participants[i].item1;
     const item2 = participants[i].item2;
@@ -191,10 +193,12 @@ class RiotApi {
     const item4 = participants[i].item4;
     const item5 = participants[i].item5;
     const item6 = participants[i].item6;
+    const goldEarned = participants[i].goldEarned;
     const damageDealt = participants[i].totalDamageDealtToChampions;
     const minionsKilled = participants[i].totalMinionsKilled
       +participants[i].neutralMinionsKilled;
     const visionScore = participants[i].visionScore;
+    const teamId = participants[i].teamId;
     
     let multiKill;
     if (!participants[i].challenges) multiKill = 0;
@@ -215,14 +219,16 @@ class RiotApi {
       item5,
       item6,
       multi_kill:multiKill,
+      gold_earned:goldEarned,
       summoner_name:summonerName,
       damage_dealt:damageDealt,
       minions_killed:minionsKilled,
       vision_score:visionScore,
       champ_level:champLevel,
-      champ_id:champId,
+      champ_key:champKey,
       rune_main:runeMain,
       rune_sub:runeSub,
+      team_id:teamId,
       win:0,
     };
 

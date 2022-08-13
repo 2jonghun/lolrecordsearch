@@ -48,8 +48,7 @@
         <div class="matchrecord__left"></div>
         <div class="matchrecord__right">
           <% for(let i = 0; i < info.matchList.length; i++) { %>
-            <div class="match-record-wrraper" data-server="<%= info.reqServer %>" data-matchid="<%= info.matchList[i] %>">
-              <span class="record-<%= i %>"><%= info.matchList[i] %></span>
+            <div id="match-<%= i %>" class="match-record-wrapper" data-server="<%= info.reqServer %>" data-matchid="<%= info.matchList[i] %>">
             </div>
           <% } %>
         </div>        

@@ -1,7 +1,8 @@
-const RIOTCDNURI = 'https://ddragon.leagueoflegends.com/cdn/';
+const RIOTCDNURI = 'https://ddragon.leagueoflegends.com/cdn';
 
 let latestVersion = '12.13.1';
 let CHAMPION;
+let RUNE;
 
 getVersion();
 
@@ -21,9 +22,37 @@ async function getChampion() {
   if (res.status == 200) {
     const champions = await res.json();
     CHAMPION = champions
-    console.log(CHAMPION);
   }
 }
+
+getRune();
+
+async function getRune() {
+  const res = await fetch('/get/runejson');
+  if (res.status == 200) {
+    const runes = await res.json();
+    RUNE = runes;
+    console.log(RUNE)
+  }
+}
+
+const SPELL = {
+  '1': 'SummonerBoost',
+  '3': 'SummonerExhaust',
+  '4': 'SummonerFlash',
+  '6': 'SummonerHaste',
+  '7': 'SummonerHeal',
+  '11': 'SummonerSmite',
+  '12': 'SummonerTeleport',
+  '13': 'SummonerMana',
+  '14': 'SummonerDot',
+  '21': 'SummonerBarrier',
+  '30': 'SummonerPoroRecall',
+  '31': 'SummonerPoroThrow',
+  '32': 'SummonerSnowball',
+  '39': 'SummonerSnowURFSnowball_Mark',
+  '54': 'Summoner_UltBook_Placeholder'
+};
 
 const QUEUETYPE = {
   400: 'norm',

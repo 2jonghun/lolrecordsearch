@@ -10,7 +10,7 @@ class RiotData {
   runesJson = {};
   championsJson = {};
   champions = [];
-  checkChampRotations = {};
+  checkChamp = {};
 
   initialize() {
     this.update();
@@ -34,7 +34,7 @@ class RiotData {
         const champKey = this.championsJson[champ].key;
         const champName = this.championsJson[champ].name;
         const champId = this.championsJson[champ].id;
-        this.checkChampRotations[champKey] = {
+        this.checkChamp[champKey] = {
           name: champName,
           id: champId,
         };

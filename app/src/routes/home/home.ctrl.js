@@ -34,9 +34,9 @@ const output = {
     else latestServer = req.cookies['latest-server'];
   
     const champRotations = await RIOTAPI.getChampRotations(latestServer);
-    const checkChampRotations = RIOTDATA.checkChampRotations;
+    const checkChamp = RIOTDATA.checkChamp;
 
-    if (checkChampRotations == 0 || champRotations.success == false) {
+    if (checkChamp == 0 || champRotations.success == false) {
       // console.log(champRotations.msg);
       return res.render('home/main', { serverList, latestServer, rotations:undefined });
     };
@@ -97,6 +97,13 @@ const process = {
     } else {
       return res.send(undefined);
     };
+  },
+
+  getChampions: (req, res) => {
+    const champions = RIOTDATA.champions;
+
+    if (champions !=0) return res.send(champions);
+    else return res.send(undefined);
   },
 
   getChampionJson: (req, res) => {
