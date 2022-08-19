@@ -4,6 +4,10 @@
 /* .main__content {
   background-color: #FFFAFA;
 } */
+a {
+  color: #24292e;
+  text-decoration-line: none;
+}
 
 .main__header {
   background-color: #545454;
@@ -125,7 +129,7 @@
 
 .content__userprofile {
   height: 200px;
-  width:  1000px;
+  width:  1050px;
 
   background-color: #F5F5F5;
 
@@ -142,12 +146,11 @@
 .profile__left {
   display: flex;
 
-  padding: 0 50px;
+  padding: 0 30px;
 }
 
 .icon__warrap {
   position: relative;
-
 }
 
 .profile__iconbox img{
@@ -216,13 +219,18 @@
   display: flex;
 }
 
+.solo-rank-text,
+.free-rank-text {
+  font-size: 13px;
+}
+
 .solo-rank,
 .free-rank {
   display: flex;
-  flex-direction: column;
+  /* flex-direction: column; */
   align-items: center;
 
-  padding: 0 50px;
+  padding: 0 30px;
 }
 
 .solo-rank-tier,
@@ -232,26 +240,56 @@
   align-items: center;
 }
 
+.solo-tier,
+.free-tier {
+  font-weight: bold;
+  font-size: 20px;
+	
+  padding: 4px;
+}
+
+.solo-ratio,
+.free-ratio,
+.solo-data,
+.free-data {
+  padding: 2px;
+}
+
+.solo-rank-text,
+.free-rank-text {
+  padding: 8px;
+}
+
 .solo-data,
 .free-data {
   display: flex;
   justify-content: center;
 }
 
+.solo-win,
+.free-win {
+  color: #408FFF;
+  font-weight: bold;
+}
+
+.solo-loss,
+.free-loss {
+  color: #cc0000;
+  font-weight: bold;
+}
+
 .content__userprofile img {
-  width: 120px;
-  height: 120px;
+  width: 135px;
+  height: 135px;
 }
 
 .matchrecord {
   height: 100%;
-  width:  1000px;
+  width:  1050px;
 
   background-color: #F5F5F5;
 
   display: flex;
-  /* flex-direction: column;
-  align-items: center;  */
 
   border: 1px solid rgba(0, 0, 0, 0.22);
   border-radius: 1em;
@@ -261,12 +299,12 @@
 
 .matchrecord__left {
   height: 100%;
-  width: 25%;
+  width: 20%;
 }
 
 .matchrecord__right {
   height: 100%;
-  width: 75%;
+  width: 80%;
 
   display: flex;
   flex-direction: column;
@@ -274,6 +312,11 @@
 }
 
 .game {
+  display: flex;
+  flex-direction: column;
+	
+  /* align-items: center; */
+  justify-content: center;
   font-size: 11px;
 }
 
@@ -290,11 +333,43 @@
   padding: 0 4px;
 }
 
+.spell_1,
+.spell_2 {
+  border-radius: 0.3em;
+}
+
+.main-spells {
+  display: flex;
+  flex-direction: column;
+}
+
+.main-spells img {
+  border-radius: 0.3em;
+}
+
 .rune {
   display: flex;
   flex-direction: column;
+	
+  align-items: center;
+  justify-content: center;
 
   padding: 0 4px;
+}
+
+.rune_main {
+  border-radius: 50%;
+  background-color: black;
+}
+
+.main-runes {
+  display: flex;
+  flex-direction: column;
+}
+
+.rune-top {
+  border-radius: 50%;
+  background-color: black;
 }
 
 .icon {
@@ -329,28 +404,71 @@
   vertical-align: middle;
 }
 
+.p-icon img {
+  border-radius: 0.3em;
+}
+
+.main-icon {
+  position: relative;
+}
+
+.main-icon img {
+  border-radius: 50%;
+  vertical-align: middle;
+}
+
+.main-icon span {
+  position: absolute;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  width: 15px;
+  height: 15px;
+
+  background-color: #24292e;
+  border-radius: 50%;
+
+  font-size: 8px;
+  color: white;
+
+  top: 75%;
+  left: 25%;
+  transform: translate( -50%, -50% );
+}
+
 .recent-game-header {
   display: flex;
 }
 
 .match-record-wrapper {
-  width: 80%;
-
+  width: 100%;
+  height: 105px;
+	
+  display: none;
+  place-items: center;
+	
   color: white;
 
-  padding: 20px;
-  margin: 8px;
+  /* padding: 10px; */
+  /* margin: 8px; */
 
   outline: solid 1px;
 
-  border-radius: 0.6em;
+  border-radius: 0.3em;
+}
+
+#match-0 {
+  margin-top: 16px;
 }
 
 .info {
   display: flex;
 }
 
-.ratio {
+.kda_ratio {
   font-size: 12px;
 }
 
@@ -358,7 +476,7 @@
 .kda,
 .stats,
 .items {
-  padding: 0 10px;
+  padding: 0 5px;
 }
 
 .kda,
@@ -372,6 +490,20 @@
 
 .kda {
   width: 100px;
+}
+
+.k-d-a {
+  font-weight: bold;
+}
+
+.result {
+  font-size: 16px;
+  font-weight: bold;
+  text-align: left;
+}
+
+.result span{
+  padding: 0 8px;
 }
 
 .stats {
@@ -395,5 +527,83 @@
   height: 26px;
   border: solid 1px #24292e;
 
-  margin-bottom: 3px;
+  margin-bottom: 2px;
+}
+
+.deaths {
+  color: red;
+}
+
+.p-kill > span {
+  font-size: 13px;
+  color: #ff4040;
+  font-weight: bold;
+}
+
+.participants {
+  font-size: 12px;
+  display: flex;
+	
+  padding: 0 10px;
+	
+  width: 150px;
+}
+
+.blue,
+.red {
+  padding: 0 4px;
+}
+
+.blue li,
+.red li {
+  display: flex;	
+}
+
+.blue li a,
+.red li a {
+  width: 50px;
+  padding: 0.15em;
+	
+  list-style: none;
+	
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  color: #FFFFFF;
+}
+
+.blue a:hover,
+.red a:hover {
+  text-decoration: underline;
+}
+
+.recent-game-main div table {
+  width: 100%;
+  border: 1px solid #444444;
+  table-layout: fixed;
+}
+
+.recent-game-main div {
+  padding: 4px;
+}
+
+.recent-game-main div table thead{
+  width: 100%;
+}
+
+.recent-game-main div table tbody tr{
+  display: flex;
+
+  align-items: center;
+  padding: 0 8px;
+  width: 100%;
+}
+
+.recent-game-main div table tbody td{
+  padding: 0 2px;
+}
+
+.main_name {
+  width: 200px;
 }

@@ -46,10 +46,15 @@
       <div class="matchrecord">
       <% if (info.matchList) { %>
         <div class="matchrecord__left"></div>
+		  <div id="div_load_image" style="position:absolute; top:50%; left:50%;width:0px;height:0px; z-index:9999; background:#f0f0f0; filter:alpha(opacity=50); opacity:alpha*0.5; margin:auto; padding:0; text-align:center">
+		    <img src="/loading/loading.gif" style="width:100px; height:100px;">
+		  </div>
         <div class="matchrecord__right">
           <% for(let i = 0; i < info.matchList.length; i++) { %>
-            <div id="match-<%= i %>" class="match-record-wrapper" data-server="<%= info.reqServer %>" data-matchid="<%= info.matchList[i] %>">
-            </div>
+			<div class="match<%= i %>-wrapper">
+			  <div id="match-<%= i %>" class="match-record-wrapper" data-server="<%= info.reqServer %>" data-matchid="<%= info.matchList[i] %>">
+              </div>
+			</div>
           <% } %>
         </div>        
       <% } else { %>
@@ -59,7 +64,7 @@
       <% } %>
       </div>
     </div>
-
+	 
     <!-- footer -->
     <div class="main__footer">
       <%- include('../layout/footer'); -%>

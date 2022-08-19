@@ -54,7 +54,10 @@ const output = {
 
   showRecord: async (req, res) => {
     const reqServer = req.params.server;
-    const reqUserName = encodeURI(req.params.username);
+    let reqUserName = req.params.username;
+	  
+	if (reqUserName.length == 2) reqUserName = encodeURI(reqUserName[0] + ' ' + reqUserName[1]);
+	else reqUserName = encodeURI(reqUserName);
 
     res.cookie('latest-server', reqServer, cookieConfig);
 
@@ -68,23 +71,20 @@ const output = {
       idInfo.info.profileIcon = RIOTDATA.getProfileIcon(idInfo.info.profileIconId);
     }
 
-    if (idInfo.success == true) {
-      if (!idInfo.solo) {
-        console.log(idInfo.info);
-        return res.render('home/showrecord', { solo:null, free:null, info:idInfo.info, serverList, latestServer:reqServer });
-      }
-      else if (!idInfo.free) {
-        return res.render('home/showrecord', { solo:idInfo.solo, free:null, info:idInfo.info, serverList, latestServer:reqServer });
-        console.log(idInfo.solo);
-        console.log(idInfo.info);
-      } else {
-        return res.render('home/showrecord', { solo:idInfo.solo, free:idInfo.free, info:idInfo.info, serverList, latestServer:reqServer });
-        console.log(idInfo.solo);
-        console.log(idInfo.free);
-        console.log(idInfo.info);
-      }
-    } else {
+    if (idInfo.success != true) {
       return res.render('home/notfound', { serverList, latestServer:reqServer });
+    }
+	
+	if (!idInfo.solo) {
+      return res.render('home/showrecord', { solo:null, free:null, info:idInfo.info, serverList, latestServer:reqServer });
+    }
+	  
+    else if (!idInfo.free) {
+      return res.render('home/showrecord', { solo:idInfo.solo, free:null, info:idInfo.info, serverList, latestServer:reqServer });
+    } else {
+	  // console.log(idInfo.solo, 'solo')
+	  // console.log(idInfo.free, 'free')
+      return res.render('home/showrecord', { solo:idInfo.solo, free:idInfo.free, info:idInfo.info, serverList, latestServer:reqServer });
     }
   }
 };

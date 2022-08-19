@@ -79,7 +79,7 @@ const QUEUETYPE = {
 const ko = {
   "solo": "솔랭",
 	"norm": "일반",
-	"aram": "칼바람",
+	"aram": "무작위 총력전",
 	"flex": "자랭",
 	"nbg": "돌넥",
 	"usb": "궁주문서",

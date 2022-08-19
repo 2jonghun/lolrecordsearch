@@ -1,9 +1,15 @@
+<% function getFloatFixed(value, fixed) { %>
+  <% if (value == 0) return %>
+  <% return Number(parseFloat(+(Math.round(value+"e+2")+"e-2")).toFixed(fixed)); %>
+<% } %>
 <img class="ranked-emblem" src="/ranked-emblems/<%= free.tier %>.png" alt="ranked-emblem">
 <div class="free-rank-tier">
+  <span class="free-rank-text">자유랭크</span>
   <span class="free-tier"><%= free.tier %> <%= free.rank %></span>
-  <span class="free-lp"><%= free.leaguePoints %>lp</span>
-</div>
-<div class="free-data">
-  <span class="free-win"><%= free.wins %>W</span>
-  <span class="free-loss"><%= free.losses %>L</span>
+  <span class="free-ratio"><%= getFloatFixed((free.wins/(free.wins+free.losses) * 100), 2) %>% <%= free.leaguePoints %>lp</span>
+  <div class="free-data">
+    <span class="free-win"><%= free.wins %>승</span>
+	&nbsp
+    <span class="free-loss"><%= free.losses %>패</span>
+  </div>
 </div>

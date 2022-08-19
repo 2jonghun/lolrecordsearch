@@ -3,10 +3,8 @@
 const superagent = require('superagent');
 // const db = require('../config/db');
 const route = require('../config/serverRoute');
-
 const apiKey = process.env.RIOTAPIKEY;
 const middleUri = 'api.riotgames.com'
-
 class RiotApi {
   reqs = {
     reqServer: 'kr',
@@ -114,10 +112,10 @@ class RiotApi {
             reqServer: this.reqs['reqServer'],
             matchList: matchList.data,
           };
-          console.log(res.body);
 
-          if (res.body) {
-            return { success:true, solo:res.body[0], free:res.body[1], info:info};
+          if (res.body.length) {
+			const rankData = this.#rankParse(res.body);
+            return { success:true, solo:rankData.solo, free:rankData.free, info:info};
           } else {
             return { success:true, solo:null, free:null, info:info};
           }
@@ -163,6 +161,17 @@ class RiotApi {
           return { success:false };
         }
       })
+  }
+	
+  #rankParse(body) {
+    const body1 = body[0]
+	const body2 = body[1]
+	
+	if (body1.queueType == 'RANKED_SOLO_5x5') {
+	  return {solo: body1, free: body2};
+	}
+	
+	return {solo: body2, free: body1};
   }
 
   #parseParticipants(participants, i) {
