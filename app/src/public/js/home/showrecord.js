@@ -42,12 +42,29 @@ Promise.all(matchIds)
 	  const redTotalKills = recentGameData.redTotalKills;
 	  
       const matchWrapper = $(matchNum);
-	  const matchWrapper2 = $(`.match${i}-wrapper`);
+	  const matchWrapper2 = $(`#match${i}-wrapper`);
       matchWrapper.append(recentGameHeader);
 	  const userNameBlueTag = $(`${matchNum} > div > .participants > .blue`);
 	  const userNameRedTag = $(`${matchNum} > div > .participants > .red`);
 	  userNameBlueTag.append(userNameBlue);
 	  userNameRedTag.append(userNameRed);
+
+	  const showGameMainDiv = $(`${matchNum} > div > .show-game-main`);
+	  const showGameMainBtn = `<button id="show-game-main-btn${i}" class="show-game-main-btn"><i class="fa-solid fa-angle-down"></i></i></button>`;
+	  showGameMainDiv.append(showGameMainBtn);
+	  $(`#show-game-main-btn${i}`).click(function() {
+		const recentGameMain = `#recent-game-main${i}`;
+		const showGameMainIcon = $(`#show-game-main-btn${i}`);
+		if ($(recentGameMain).attr('class') == 'recent-game-main-hide') {
+		  $(recentGameMain).attr('class', 'recent-game-main')
+		  showGameMainIcon.css('transform', 'rotate(180deg)')
+		} else {
+		  $(recentGameMain).attr('class', 'recent-game-main-hide')
+		  showGameMainIcon.css('transform', 'rotate(360deg)')
+		}
+	  })
+	  
+	  
 	  
 	  let gameResultEnTop;
 	  let gameResultKoTop;
@@ -110,7 +127,7 @@ Promise.all(matchIds)
 	  let recentGameMain = ``;
 		
 	  recentGameMain += `
-	    <div class="recent-game-main">
+	    <div id="recent-game-main${i}" class="recent-game-main-hide">
 	      <div result="${gameResultEnTop}">
 		    <table result="${gameResultEnTop}">
 	  		  <colgroup>
@@ -591,6 +608,7 @@ function recentGame(gameData, summonerName) {
             </div>
           </div>
 		  <div class="participants"><ul class="blue"></ul><ul class="red"></ul></div>
+		  <div class="show-game-main"></div>
         </div>`;
 	  if (teamId == 100) {
 		blueTotalKills += kills;

@@ -51,7 +51,7 @@
 		  </div>
         <div class="matchrecord__right">
           <% for(let i = 0; i < info.matchList.length; i++) { %>
-			<div class="match<%= i %>-wrapper">
+			<div id="match<%= i %>-wrapper" class="match-wrapper">
 			  <div id="match-<%= i %>" class="match-record-wrapper" data-server="<%= info.reqServer %>" data-matchid="<%= info.matchList[i] %>">
               </div>
 			</div>

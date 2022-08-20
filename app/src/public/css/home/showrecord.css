@@ -441,6 +441,8 @@ a {
 
 .recent-game-header {
   display: flex;
+
+  position: relative;
 }
 
 .match-record-wrapper {
@@ -452,12 +454,13 @@ a {
 	
   color: white;
 
-  /* padding: 10px; */
-  /* margin: 8px; */
-
   outline: solid 1px;
 
   border-radius: 0.3em;
+}
+
+.match-wrapper {
+  margin-bottom: 16px;
 }
 
 #match-0 {
@@ -578,6 +581,10 @@ a {
   text-decoration: underline;
 }
 
+.recent-game-main-hide {
+  display: none;
+}
+
 .recent-game-main div table {
   width: 100%;
   border: 1px solid #444444;
@@ -606,4 +613,24 @@ a {
 
 .main_name {
   width: 200px;
+}
+
+.show-game-main {
+  position: absolute;
+  top: 85%;
+  left: 103%;
+  transform: translate( -50%, -50% );
+}
+
+.show-game-main-btn {
+  border: none;
+  background: none;
+}
+
+.show-game-main-btn i {
+  font-size: 23px;
+  color: #F5F5F5;
+  cursor: pointer;
+
+  /* transform: rotate( 180deg ); */
 }
