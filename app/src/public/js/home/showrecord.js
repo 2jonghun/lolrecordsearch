@@ -1,8 +1,10 @@
 const summonerName = document.querySelector('.summonerName').innerText;
-document.title = `${summonerName} - LoL Record`;
+document.title = `${summonerName} - 전적 - LoL Record`;
 const soloRankTier = document.querySelector('.solo-tier');
 const soloRankTierText = soloRankTier.innerText.split(' ')[0]
-if (soloRankTierText == 'GOLD') soloRankTier.style.color = 'black';
+// if (soloRankTierText == 'GOLD') soloRankTier.style.color = 'black';
+
+const itemUri = 'https://ddragon.bangingheads.net/cdn/latest/img/item';
 
 const matchIdTags = document.querySelectorAll('.match-record-wrapper');
 const matchIds = [];
@@ -40,10 +42,12 @@ Promise.all(matchIds)
 	  const userNameRed = recentGameData.userNameRed;
 	  const blueTotalKills = recentGameData.blueTotalKills;
 	  const redTotalKills = recentGameData.redTotalKills;
+	  const blueTotalDamageDealt = recentGameData.blueTotalDamageDealt;
+	  const redTotalDamageDealt = recentGameData.redTotalDamageDealt;
 	  
       const matchWrapper = $(matchNum);
-	  const matchWrapper2 = $(`#match${i}-wrapper`);
       matchWrapper.append(recentGameHeader);
+
 	  const userNameBlueTag = $(`${matchNum} > div > .participants > .blue`);
 	  const userNameRedTag = $(`${matchNum} > div > .participants > .red`);
 	  userNameBlueTag.append(userNameBlue);
@@ -52,6 +56,7 @@ Promise.all(matchIds)
 	  const showGameMainDiv = $(`${matchNum} > div > .show-game-main`);
 	  const showGameMainBtn = `<button id="show-game-main-btn${i}" class="show-game-main-btn"><i class="fa-solid fa-angle-down"></i></i></button>`;
 	  showGameMainDiv.append(showGameMainBtn);
+
 	  $(`#show-game-main-btn${i}`).click(function() {
 		const recentGameMain = `#recent-game-main${i}`;
 		const showGameMainIcon = $(`#show-game-main-btn${i}`);
@@ -64,53 +69,61 @@ Promise.all(matchIds)
 		}
 	  })
 	  
-	  
-	  
 	  let gameResultEnTop;
 	  let gameResultKoTop;
 	  let gameResultEnBottom;
 	  let gameResultKoBottom;
 	  let topTeam;
 	  let bottomTeam;
+	  let topTotalKills;
+	  let bottomTotalKills;
+	  let topTotalDamageDealt;
+	  let bottomTotalDamageDealt;
 	  let participantsTop;
 	  let participantsBottom;
 	  
 	  if (topTeamId == 100) { 
 		topTeam = '블루팀';
+		topTotalKills = blueTotalKills;
+		topTotalDamageDealt = blueTotalDamageDealt;
 		bottomTeam = '레드팀';
+		bottomTotalKills = redTotalKills;
+		bottomTotalDamageDealt = redTotalDamageDealt;
+		participantsTop = participantsBlue;
+		participantsBottom = participantsRed;
+
 		if (blueTeamWin == true) {
 		  gameResultEnTop = 'WIN';
 		  gameResultKoTop = '승리';
 		  gameResultEnBottom = 'LOSE';
 		  gameResultKoBottom = '패배';
-		  participantsTop = participantsBlue;
-		  participantsBottom = participantsRed;
 		} else {
 		  gameResultEnBottom = 'WIN';
 		  gameResultKoBottom = '승리';
 		  gameResultEnTop = 'LOSE';
 		  gameResultKoTop = '패배';
-		  participantsTop = participantsRed;
-		  participantsBottom = participantsBlue;
 		}
 	  }
 	  else { 
 	    topTeam = '레드팀';
+		topTotalKills = redTotalKills;
+		topTotalDamageDealt = redTotalDamageDealt;
 		bottomTeam = '블루팀';
+		bottomTotalKills = blueTotalKills;
+		bottomTotalDamageDealt = blueTotalDamageDealt;
+		participantsTop = participantsRed;
+		participantsBottom = participantsBlue;
+
 		if (redTeamWin == true) {
 		  gameResultEnTop = 'WIN';
 		  gameResultKoTop = '승리';
 		  gameResultEnBottom = 'LOSE';
 		  gameResultKoBottom = '패배';
-		  participantsTop = participantsRed;
-		  participantsBottom = participantsBlue;
 		} else {
 		  gameResultEnBottom = 'WIN';
 		  gameResultKoBottom = '승리';
 		  gameResultEnTop = 'LOSE';
 		  gameResultKoTop = '패배';
-		  participantsTop = participantsBlue;
-		  participantsBottom = participantsRed;
 		}
 	  }
 
@@ -128,285 +141,703 @@ Promise.all(matchIds)
 		
 	  recentGameMain += `
 	    <div id="recent-game-main${i}" class="recent-game-main-hide">
-	      <div result="${gameResultEnTop}">
-		    <table result="${gameResultEnTop}">
-	  		  <colgroup>
-	  			<col width="25%">
-				<col width="15%">
-				<col width="20%">
-				<col width="10%">
-				<col width="30%">
-			  </colgroup>
-		      <thead>
-			    <tr>
-			      <th scope="col"><div class="result"><span>${gameResultKoTop}(${topTeam})</span></div></th>
-			      <th scope="col">KDA</th>
-				  <th scope="col">피해량</th>
-			      <th scope="col">CS</th>
-				  <th scope="col">아이템</th>
-			    </tr>
-			  </thead>
-			  <tbody>
-			    <tr>
-				  <td class="main-champion">
-				    <div class="main-icon">
-					  <img src="${RIOTCDNURI}/${latestVersion}/img/champion/${checkChamp(participantsTop[0].champ_key)[1]}.png" width="32" height="32">
-					  <span class="main-champ-level">${participantsTop[0].champ_level}</span>
+	      <div id="result-top"  result="${gameResultEnTop}">
+	  		<div class="main-header">
+			  <div class="main-header-result" style="width: 25%;"><span class="result">${gameResultKoTop}</span> (${topTeam})</div>
+			  <div class="main-header-kda" style="width: 15%;">KDA</div>
+			  <div class="main-header-damage" style="width: 20%;">딜량</div>
+			  <div class="main-header-cs" style="width: 10%;">CS</div>
+			  <div class="main-header-item" style="width: 30%;">아이템</div>
+			</div>
+			<ul>
+			  <li>
+				<div class="main-icon">
+				  <img src="${RIOTCDNURI}/${latestVersion}/img/champion/${checkChamp(participantsTop[0].champ_key)[1]}.png" width="32" height="32">
+				  <span class="main-champ-level">${participantsTop[0].champ_level}</span>
+				</div>
+				<div class="main-spells">
+	  			  <img src="${RIOTCDNURI}/${latestVersion}/img/spell/${SPELL[participantsTop[0].spell1]}.png" width="16" height="16">
+	  			  <img src="${RIOTCDNURI}/${latestVersion}/img/spell/${SPELL[participantsTop[0].spell2]}.png" width="16" height="16">
+				</div>
+				<div class="main-runes">
+				  <img class="rune-top" src="${RIOTCDNURI}/img/${mainRunes.runeTop0[0][0]}" width="16" height="16">
+				  <img src="${RIOTCDNURI}/img/${mainRunes.runeTop0[1][0]}" width="16" height="16">
+				</div>
+				<div class="main-name">
+	  			  <span><a href="/summoners/${matchServer}/${participantsTop[0].summoner_name}">${participantsTop[0].summoner_name}</a></span>
+				</div>
+				<div class="main-kda">
+				  <div class="main-k-d-a">
+				    <span class="main-kills">${participantsTop[0].kills}</span>
+				    /
+				    <span class="main-deaths">${participantsTop[0].deaths}</span>
+				    /
+				    <span class="main-assists">${participantsTop[0].assists}</span>
+				    <span>(${getFloatFixed(((participantsTop[0].kills+participantsTop[0].assists)/topTotalKills) * 100, 0)}%)</span>
+				  </div>
+				  <div class="main-kda-ratio">
+				    <span class="main-ratio">${participantsTop[0].kda}</span>
+				  </div>
+				</div>
+				<div class="main-damage">
+	  			  <div class="dealt">${participantsTop[0].damage_dealt}</div>
+				  <div class="blank"></div>
+				  <div class="progress">
+				    <div class="fill" style="width: ${getFloatFixed((participantsTop[0].damage_dealt/topTotalDamageDealt) * 100, 0)}%"></div>
+				  </div>
+				</div>
+				<div class="main-cs">
+	  			  <div class="cs">${participantsTop[0].minions_killed}</div>
+				  <div class="blank"></div>
+				  <div class="main-min-cs">분당 ${participantsTop[0].min_minions_killed}</div>
+				</div>
+				<div class="main-item">
+				  <div class="items">
+				    <div class="item0">
+					  ${participantsTop[0].item0}
+				    </div>
+				    <div class="item1">
+					  ${participantsTop[0].item1}
+				    </div>
+					<div class="item2">
+					  ${participantsTop[0].item2}
 					</div>
-				  </td>
-				  <td class="main-spells">
-	  				<img src="${RIOTCDNURI}/${latestVersion}/img/spell/${SPELL[participantsTop[0].spell1]}.png" width="16" height="16">
-	  				<img src="${RIOTCDNURI}/${latestVersion}/img/spell/${SPELL[participantsTop[0].spell2]}.png" width="16" height="16">
-				  </td>
-				  <td class="main-runes">
-					<img class="rune-top" src="${RIOTCDNURI}/img/${mainRunes.runeTop0[0][0]}" width="16" height="16">
-					<img src="${RIOTCDNURI}/img/${mainRunes.runeTop0[1][0]}" width="16" height="16">
-				  </td>
-				  <td class="main-name">
-	  				<span><a href="/summoners/${matchServer}/${participantsTop[0].summoner_name}">${participantsTop[0].summoner_name}</a></span>
-				  </td>
-				  <td class="main-kda">${participantsTop[0].kda}</td>
-				  <td class="main-damage"></td>
-				  <td class="main-cs"></td>
-				  <td class="main-items"></td>
-			    </tr>
-			    <tr>
-				  <td class="main-champion">
-				    <div class="main-icon">
-					  <img src="${RIOTCDNURI}/${latestVersion}/img/champion/${checkChamp(participantsTop[1].champ_key)[1]}.png" width="32" height="32">
-					  <span class="main-champ-level">${participantsTop[1].champ_level}</span>
+					<div class="item3">
+					  ${participantsTop[0].item3}
 					</div>
-				  </td>
-				  <td class="main-spells">
-	  				<img src="${RIOTCDNURI}/${latestVersion}/img/spell/${SPELL[participantsTop[1].spell1]}.png" width="16" height="16"">
-	  				<img src="${RIOTCDNURI}/${latestVersion}/img/spell/${SPELL[participantsTop[1].spell2]}.png" width="16" height="16">
-				  </td>
-				  <td class="main-runes">
-					<img class="rune-top" src="${RIOTCDNURI}/img/${mainRunes.runeTop1[0][0]}" width="16" height="16">
-					<img src="${RIOTCDNURI}/img/${mainRunes.runeTop1[1][0]}" width="16" height="16">
-				  </td>
-				  <td class="main-name">
-				  <span><a href="/summoners/${matchServer}/${participantsTop[1].summoner_name}">${participantsTop[1].summoner_name}</a></span>
-				  </td>
-				  <td class="main-kda"></td>
-				  <td class="main-damage"></td>
-				  <td class="main-cs"></td>
-				  <td class="main-items"></td>
-			    </tr>
-			    <tr>
-				  <td class="main-champion">
-				    <div class="main-icon">
-					  <img src="${RIOTCDNURI}/${latestVersion}/img/champion/${checkChamp(participantsTop[2].champ_key)[1]}.png" width="32" height="32">
-					  <span class="main-champ-level">${participantsTop[2].champ_level}</span>
+					<div class="item4">
+					  ${participantsTop[0].item4}
 					</div>
-				  </td>
-				  <td class="main-spells">
-	  				<img src="${RIOTCDNURI}/${latestVersion}/img/spell/${SPELL[participantsTop[2].spell1]}.png" width="16" height="16">
-	  				<img src="${RIOTCDNURI}/${latestVersion}/img/spell/${SPELL[participantsTop[2].spell2]}.png" width="16" height="16">
-				  </td>
-				  <td class="main-runes">
-					<img class="rune-top" src="${RIOTCDNURI}/img/${mainRunes.runeTop2[0][0]}" width="16" height="16">
-					<img src="${RIOTCDNURI}/img/${mainRunes.runeTop2[1][0]}" width="16" height="16">
-				  </td>
-				  <td class="main-name">
-				  <span><a href="/summoners/${matchServer}/${participantsTop[2].summoner_name}">${participantsTop[2].summoner_name}</a></span>
-				  </td>
-				  <td class="main-kda"></td>
-				  <td class="main-damage"></td>
-				  <td class="main-cs"></td>
-				  <td class="main-items"></td>
-			    </tr>
-			    <tr>
-				  <td class="main-champion">
-				    <div class="main-icon">
-					  <img src="${RIOTCDNURI}/${latestVersion}/img/champion/${checkChamp(participantsTop[3].champ_key)[1]}.png" width="32" height="32">
-					  <span class="main-champ-level">${participantsTop[3].champ_level}</span>
+					<div class="item5">
+					  ${participantsTop[0].item5}
 					</div>
-				  </td>
-				  <td class="main-spells">
-	  				<img src="${RIOTCDNURI}/${latestVersion}/img/spell/${SPELL[participantsTop[3].spell1]}.png" width="16" height="16">
-	  				<img src="${RIOTCDNURI}/${latestVersion}/img/spell/${SPELL[participantsTop[3].spell2]}.png" width="16" height="16">
-				  </td>
-				  <td class="main-runes">
-					<img class="rune-top" src="${RIOTCDNURI}/img/${mainRunes.runeTop3[0][0]}" width="16" height="16">
-					<img src="${RIOTCDNURI}/img/${mainRunes.runeTop3[1][0]}" width="16" height="16">
-				  </td>
-				  <td class="main-name">
-				  <span><a href="/summoners/${matchServer}/${participantsTop[3].summoner_name}">${participantsTop[3].summoner_name}</a></span>
-				  </td>
-				  <td class="main-kda"></td>
-				  <td class="main-damage"></td>
-				  <td class="main-cs"></td>
-				  <td class="main-items"></td>
-			    </tr>
-			    <tr>
-				  <td class="main-champion">
-				    <div class="main-icon">
-					  <img src="${RIOTCDNURI}/${latestVersion}/img/champion/${checkChamp(participantsTop[4].champ_key)[1]}.png" width="32" height="32">
-					  <span class="main-champ-level">${participantsTop[4].champ_level}</span>
+					<div class="item6">
+					  ${participantsTop[0].item6}
 					</div>
-				  </td>
-				  <td class="main-spells">
-	  				<img src="${RIOTCDNURI}/${latestVersion}/img/spell/${SPELL[participantsTop[4].spell1]}.png" width="16" height="16">
-	  				<img src="${RIOTCDNURI}/${latestVersion}/img/spell/${SPELL[participantsTop[4].spell2]}.png" width="16" height="16">
-				  </td>
-				  <td class="main-runes">
-					<img class="rune-top" src="${RIOTCDNURI}/img/${mainRunes.runeTop4[0][0]}" width="16" height="16">
-					<img src="${RIOTCDNURI}/img/${mainRunes.runeTop4[1][0]}" width="16" height="16">
-				  </td>
-				  <td class="main-name">
-				  <span><a href="/summoners/${matchServer}/${participantsTop[4].summoner_name}">${participantsTop[4].summoner_name}</a></span>
-				  </td>
-				  <td class="main-kda"></td>
-				  <td class="main-damage"></td>
-				  <td class="main-cs"></td>
-				  <td class="main-items"></td>
-			    </tr>				
-			  </tbody>
-		    </table>
+				  </div>
+				</div>
+			  </li>
+			  <li>
+				<div class="main-icon">
+				  <img src="${RIOTCDNURI}/${latestVersion}/img/champion/${checkChamp(participantsTop[1].champ_key)[1]}.png" width="32" height="32">
+				  <span class="main-champ-level">${participantsTop[1].champ_level}</span>
+				</div>
+				<div class="main-spells">
+	  			  <img src="${RIOTCDNURI}/${latestVersion}/img/spell/${SPELL[participantsTop[1].spell1]}.png" width="16" height="16">
+	  			  <img src="${RIOTCDNURI}/${latestVersion}/img/spell/${SPELL[participantsTop[1].spell2]}.png" width="16" height="16">
+				</div>
+				<div class="main-runes">
+				  <img class="rune-top" src="${RIOTCDNURI}/img/${mainRunes.runeTop1[0][0]}" width="16" height="16">
+				  <img src="${RIOTCDNURI}/img/${mainRunes.runeTop1[1][0]}" width="16" height="16">
+				</div>
+				<div class="main-name">
+	  			  <span><a href="/summoners/${matchServer}/${participantsTop[1].summoner_name}">${participantsTop[1].summoner_name}</a></span>
+				</div>
+				<div class="main-kda">
+				  <div class="main-k-d-a">
+				    <span class="main-kills">${participantsTop[1].kills}</span>
+				    /
+				    <span class="main-deaths">${participantsTop[1].deaths}</span>
+				    /
+				    <span class="main-assists">${participantsTop[1].assists}</span>
+				    <span>(${getFloatFixed(((participantsTop[1].kills+participantsTop[1].assists)/topTotalKills) * 100, 0)}%)</span>
+				  </div>
+				  <div class="main-kda-ratio">
+				    <span class="main-ratio">${participantsTop[1].kda}</span>
+				  </div>
+				</div>
+				<div class="main-damage">
+	  			  <div class="dealt">${participantsTop[1].damage_dealt}</div>
+				  <div class="blank"></div>
+				  <div class="progress">
+				    <div class="fill" style="width: ${getFloatFixed((participantsTop[1].damage_dealt/topTotalDamageDealt) * 100, 0)}%"></div>
+				  </div>
+				</div>
+				<div class="main-cs">
+	  			  <div class="cs">${participantsTop[1].minions_killed}</div>
+				  <div class="blank"></div>
+				  <div class="main-min-cs">분당 ${participantsTop[1].min_minions_killed}</div>
+				</div>
+				<div class="main-item">
+				  <div class="items">
+				    <div class="item0">
+					  ${participantsTop[1].item0}
+				    </div>
+				    <div class="item1">
+					  ${participantsTop[1].item1}
+				    </div>
+					<div class="item2">
+					  ${participantsTop[1].item2}
+					</div>
+					<div class="item3">
+					  ${participantsTop[1].item3}
+					</div>
+					<div class="item4">
+					  ${participantsTop[1].item4}
+					</div>
+					<div class="item5">
+					  ${participantsTop[1].item5}
+					</div>
+					<div class="item6">
+					  ${participantsTop[1].item6}
+					</div>
+				  </div>
+				</div>
+			  </li>
+			  <li>
+				<div class="main-icon">
+				  <img src="${RIOTCDNURI}/${latestVersion}/img/champion/${checkChamp(participantsTop[2].champ_key)[1]}.png" width="32" height="32">
+				  <span class="main-champ-level">${participantsTop[2].champ_level}</span>
+				</div>
+				<div class="main-spells">
+	  			  <img src="${RIOTCDNURI}/${latestVersion}/img/spell/${SPELL[participantsTop[2].spell1]}.png" width="16" height="16">
+	  			  <img src="${RIOTCDNURI}/${latestVersion}/img/spell/${SPELL[participantsTop[2].spell2]}.png" width="16" height="16">
+				</div>
+				<div class="main-runes">
+				  <img class="rune-top" src="${RIOTCDNURI}/img/${mainRunes.runeTop2[0][0]}" width="16" height="16">
+				  <img src="${RIOTCDNURI}/img/${mainRunes.runeTop2[1][0]}" width="16" height="16">
+				</div>
+				<div class="main-name">
+	  			  <span><a href="/summoners/${matchServer}/${participantsTop[2].summoner_name}">${participantsTop[2].summoner_name}</a></span>
+				</div>
+				<div class="main-kda">
+				  <div class="main-k-d-a">
+				    <span class="main-kills">${participantsTop[2].kills}</span>
+				    /
+				    <span class="main-deaths">${participantsTop[2].deaths}</span>
+				    /
+				    <span class="main-assists">${participantsTop[2].assists}</span>
+				    <span>(${getFloatFixed(((participantsTop[2].kills+participantsTop[2].assists)/topTotalKills) * 100, 0)}%)</span>
+				  </div>
+				  <div class="main-kda-ratio">
+				    <span class="main-ratio">${participantsTop[2].kda}</span>
+				  </div>
+				</div>
+				<div class="main-damage">
+	  			  <div class="dealt">${participantsTop[2].damage_dealt}</div>
+				  <div class="blank"></div>
+				  <div class="progress">
+				    <div class="fill" style="width: ${getFloatFixed((participantsTop[2].damage_dealt/topTotalDamageDealt) * 100, 0)}%"></div>
+				  </div>
+				</div>
+				<div class="main-cs">
+	  			  <div class="cs">${participantsTop[2].minions_killed}</div>
+				  <div class="blank"></div>
+				  <div class="main-min-cs">분당 ${participantsTop[2].min_minions_killed}</div>
+				</div>
+				<div class="main-item">
+				  <div class="items">
+				    <div class="item0">
+					  ${participantsTop[2].item0}
+				    </div>
+				    <div class="item1">
+					  ${participantsTop[2].item1}
+				    </div>
+					<div class="item2">
+					  ${participantsTop[2].item2}
+					</div>
+					<div class="item3">
+					  ${participantsTop[2].item3}
+					</div>
+					<div class="item4">
+					  ${participantsTop[2].item4}
+					</div>
+					<div class="item5">
+					  ${participantsTop[2].item5}
+					</div>
+					<div class="item6">
+					  ${participantsTop[2].item6}
+					</div>
+				  </div>
+				</div>
+			  </li>
+			  <li>
+				<div class="main-icon">
+				  <img src="${RIOTCDNURI}/${latestVersion}/img/champion/${checkChamp(participantsTop[3].champ_key)[1]}.png" width="32" height="32">
+				  <span class="main-champ-level">${participantsTop[3].champ_level}</span>
+				</div>
+				<div class="main-spells">
+	  			  <img src="${RIOTCDNURI}/${latestVersion}/img/spell/${SPELL[participantsTop[3].spell1]}.png" width="16" height="16">
+	  			  <img src="${RIOTCDNURI}/${latestVersion}/img/spell/${SPELL[participantsTop[3].spell2]}.png" width="16" height="16">
+				</div>
+				<div class="main-runes">
+				  <img class="rune-top" src="${RIOTCDNURI}/img/${mainRunes.runeTop3[0][0]}" width="16" height="16">
+				  <img src="${RIOTCDNURI}/img/${mainRunes.runeTop3[1][0]}" width="16" height="16">
+				</div>
+				<div class="main-name">
+	  			  <span><a href="/summoners/${matchServer}/${participantsTop[3].summoner_name}">${participantsTop[3].summoner_name}</a></span>
+				</div>
+				<div class="main-kda">
+				  <div class="main-k-d-a">
+				    <span class="main-kills">${participantsTop[3].kills}</span>
+				    /
+				    <span class="main-deaths">${participantsTop[3].deaths}</span>
+				    /
+				    <span class="main-assists">${participantsTop[3].assists}</span>
+				    <span>(${getFloatFixed(((participantsTop[3].kills+participantsTop[3].assists)/topTotalKills) * 100, 0)}%)</span>
+				  </div>
+				  <div class="main-kda-ratio">
+				    <span class="main-ratio">${participantsTop[3].kda}</span>
+				  </div>
+				</div>
+				<div class="main-damage">
+	  			  <div class="dealt">${participantsTop[3].damage_dealt}</div>
+				  <div class="blank"></div>
+				  <div class="progress">
+				    <div class="fill" style="width: ${getFloatFixed((participantsTop[3].damage_dealt/topTotalDamageDealt) * 100, 0)}%"></div>
+				  </div>
+				</div>
+				<div class="main-cs">
+	  			  <div class="cs">${participantsTop[3].minions_killed}</div>
+				  <div class="blank"></div>
+				  <div class="main-min-cs">분당 ${participantsTop[3].min_minions_killed}</div>
+				</div>
+				<div class="main-item">
+				  <div class="items">
+				    <div class="item0">
+					  ${participantsTop[3].item0}
+				    </div>
+				    <div class="item1">
+					  ${participantsTop[3].item1}
+				    </div>
+					<div class="item2">
+					  ${participantsTop[3].item2}
+					</div>
+					<div class="item3">
+					  ${participantsTop[3].item3}
+					</div>
+					<div class="item4">
+					  ${participantsTop[3].item4}
+					</div>
+					<div class="item5">
+					  ${participantsTop[3].item5}
+					</div>
+					<div class="item6">
+					  ${participantsTop[3].item6}
+					</div>
+				  </div>
+				</div>
+			  </li>
+			  <li>
+				<div class="main-icon">
+				  <img src="${RIOTCDNURI}/${latestVersion}/img/champion/${checkChamp(participantsTop[4].champ_key)[1]}.png" width="32" height="32">
+				  <span class="main-champ-level">${participantsTop[4].champ_level}</span>
+				</div>
+				<div class="main-spells">
+	  			  <img src="${RIOTCDNURI}/${latestVersion}/img/spell/${SPELL[participantsTop[4].spell1]}.png" width="16" height="16">
+	  			  <img src="${RIOTCDNURI}/${latestVersion}/img/spell/${SPELL[participantsTop[4].spell2]}.png" width="16" height="16">
+				</div>
+				<div class="main-runes">
+				  <img class="rune-top" src="${RIOTCDNURI}/img/${mainRunes.runeTop4[0][0]}" width="16" height="16">
+				  <img src="${RIOTCDNURI}/img/${mainRunes.runeTop4[1][0]}" width="16" height="16">
+				</div>
+				<div class="main-name">
+	  			  <span><a href="/summoners/${matchServer}/${participantsTop[4].summoner_name}">${participantsTop[4].summoner_name}</a></span>
+				</div>
+				<div class="main-kda">
+				  <div class="main-k-d-a">
+				    <span class="main-kills">${participantsTop[4].kills}</span>
+				    /
+				    <span class="main-deaths">${participantsTop[4].deaths}</span>
+				    /
+				    <span class="main-assists">${participantsTop[4].assists}</span>
+				    <span>(${getFloatFixed(((participantsTop[4].kills+participantsTop[4].assists)/topTotalKills) * 100, 0)}%)</span>
+				  </div>
+				  <div class="main-kda-ratio">
+				    <span class="main-ratio">${participantsTop[4].kda}</span>
+				  </div>
+				</div>
+				<div class="main-damage">
+	  			  <div class="dealt">${participantsTop[4].damage_dealt}</div>
+				  <div class="blank"></div>
+				  <div class="progress">
+				    <div class="fill" style="width: ${getFloatFixed((participantsTop[4].damage_dealt/topTotalDamageDealt) * 100, 0)}%"></div>
+				  </div>
+				</div>
+				<div class="main-cs">
+	  			  <div class="cs">${participantsTop[4].minions_killed}</div>
+				  <div class="blank"></div>
+				  <div class="main-min-cs">분당 ${participantsTop[4].min_minions_killed}</div>
+				</div>
+				<div class="main-item">
+				  <div class="items">
+				    <div class="item0">
+					  ${participantsTop[4].item0}
+				    </div>
+				    <div class="item1">
+					  ${participantsTop[4].item1}
+				    </div>
+					<div class="item2">
+					  ${participantsTop[4].item2}
+					</div>
+					<div class="item3">
+					  ${participantsTop[4].item3}
+					</div>
+					<div class="item4">
+					  ${participantsTop[4].item4}
+					</div>
+					<div class="item5">
+					  ${participantsTop[4].item5}
+					</div>
+					<div class="item6">
+					  ${participantsTop[4].item6}
+					</div>
+				  </div>
+				</div>
+			  </li>
+			</ul>
 		  </div>
-		
-	      <div result="${gameResultEnBottom}">
-		    <table result="${gameResultEnBottom}">
-	  		  <colgroup>
-	  			<col width="25%">
-				<col width="15%">
-				<col width="20%">
-				<col width="10%">
-				<col width="30%">
-			  </colgroup>
-		      <thead>
-			    <tr>
-			      <th scope="col"><div class="result"><span>${gameResultKoBottom}(${bottomTeam})</span></div></th>
-			      <th scope="col">KDA</th>
-				  <th scope="col">피해량</th>
-			      <th scope="col">CS</th>
-				  <th scope="col">아이템</th>
-			    </tr>
-			  </thead>
-			  <tbody>
-			    <tr>
-				  <td class="main-champion">
-				    <div class="main-icon">
-					  <img src="${RIOTCDNURI}/${latestVersion}/img/champion/${checkChamp(participantsBottom[0].champ_key)[1]}.png" width="32" height="32">
-					  <span class="main-champ-level">${participantsBottom[0].champ_level}</span>
+	      <div id="result-bottom" result="${gameResultEnBottom}">
+	  		<div class="main-header">
+			  <div class="main-header-result" style="width: 25%;"><span class="result">${gameResultKoBottom}</span> (${bottomTeam})</div>
+			  <div class="main-header-kda" style="width: 15%;">KDA</div>
+			  <div class="main-header-damage" style="width: 20%;">딜량</div>
+			  <div class="main-header-cs" style="width: 10%;">CS</div>
+			  <div class="main-header-item" style="width: 30%;">아이템</div>
+			</div>
+			<ul>
+			  <li>
+				<div class="main-icon">
+				  <img src="${RIOTCDNURI}/${latestVersion}/img/champion/${checkChamp(participantsBottom[0].champ_key)[1]}.png" width="32" height="32">
+				  <span class="main-champ-level">${participantsBottom[0].champ_level}</span>
+				</div>
+				<div class="main-spells">
+	  			  <img src="${RIOTCDNURI}/${latestVersion}/img/spell/${SPELL[participantsBottom[0].spell1]}.png" width="16" height="16">
+	  			  <img src="${RIOTCDNURI}/${latestVersion}/img/spell/${SPELL[participantsBottom[0].spell2]}.png" width="16" height="16">
+				</div>
+				<div class="main-runes">
+				  <img class="rune-top" src="${RIOTCDNURI}/img/${mainRunes.runeBottom0[0][0]}" width="16" height="16">
+				  <img src="${RIOTCDNURI}/img/${mainRunes.runeBottom0[1][0]}" width="16" height="16">
+				</div>
+				<div class="main-name">
+	  			  <span><a href="/summoners/${matchServer}/${participantsBottom[0].summoner_name}">${participantsBottom[0].summoner_name}</a></span>
+				</div>
+				<div class="main-kda">
+				  <div class="main-k-d-a">
+				    <span class="main-kills">${participantsBottom[0].kills}</span>
+				    /
+				    <span class="main-deaths">${participantsBottom[0].deaths}</span>
+				    /
+				    <span class="main-assists">${participantsBottom[0].assists}</span>
+				    <span>(${getFloatFixed(((participantsBottom[0].kills+participantsBottom[0].assists)/bottomTotalKills) * 100, 0)}%)</span>
+				  </div>
+				  <div class="main-kda-ratio">
+				    <span class="main-ratio">${participantsBottom[0].kda}</span>
+				  </div>
+				</div>
+				<div class="main-damage">
+	  			  <div class="dealt">${participantsBottom[0].damage_dealt}</div>
+				  <div class="blank"></div>
+				  <div class="progress">
+				    <div class="fill" style="width: ${getFloatFixed((participantsBottom[0].damage_dealt/bottomTotalDamageDealt) * 100, 0)}%"></div>
+				  </div>
+				</div>
+				<div class="main-cs">
+	  			  <div class="cs">${participantsBottom[0].minions_killed}</div>
+				  <div class="blank"></div>
+				  <div class="main-min-cs">분당 ${participantsBottom[0].min_minions_killed}</div>
+				</div>
+				<div class="main-item">
+				  <div class="items">
+				    <div class="item0">
+					  ${participantsBottom[0].item0}
+				    </div>
+				    <div class="item1">
+					  ${participantsBottom[0].item1}
+				    </div>
+					<div class="item2">
+					  ${participantsBottom[0].item2}
 					</div>
-				  </td>
-				  <td class="main-spells">
-	  				<img src="${RIOTCDNURI}/${latestVersion}/img/spell/${SPELL[participantsBottom[0].spell1]}.png" width="16" height="16">
-	  				<img src="${RIOTCDNURI}/${latestVersion}/img/spell/${SPELL[participantsBottom[0].spell2]}.png" width="16" height="16">
-				  </td>
-				  <td class="main-runes">
-					<img class="rune-top" src="${RIOTCDNURI}/img/${mainRunes.runeBottom0[0][0]}" width="16" height="16">
-					<img src="${RIOTCDNURI}/img/${mainRunes.runeBottom0[1][0]}" width="16" height="16">
-				  </td>
-				  <td class="main-name">
-				  	<span><a href="/summoners/${matchServer}/${participantsBottom[0].summoner_name}">${participantsBottom[0].summoner_name}</a></span>
-				  </td>
-				  <td class="main-kda"></td>
-				  <td class="main-damage"></td>
-				  <td class="main-cs"></td>
-				  <td class="main-items"></td>
-			    </tr>
-			    <tr>
-				  <td class="main-champion">
-				    <div class="main-icon">
-					  <img src="${RIOTCDNURI}/${latestVersion}/img/champion/${checkChamp(participantsBottom[1].champ_key)[1]}.png" width="32" height="32">
-					  <span class="main-champ-level">${participantsBottom[1].champ_level}</span>
+					<div class="item3">
+					  ${participantsBottom[0].item3}
 					</div>
-				  </td>
-				  <td class="main-spells">
-	  				<img src="${RIOTCDNURI}/${latestVersion}/img/spell/${SPELL[participantsBottom[1].spell1]}.png" width="16" height="16">
-	  				<img src="${RIOTCDNURI}/${latestVersion}/img/spell/${SPELL[participantsBottom[1].spell2]}.png" width="16" height="16">			  
-				  </td>
-				  <td class="main-runes">
-					<img class="rune-top" src="${RIOTCDNURI}/img/${mainRunes.runeBottom1[0][0]}" width="16" height="16">
-					<img src="${RIOTCDNURI}/img/${mainRunes.runeBottom1[1][0]}" width="16" height="16">
-				  </td>
-				  <td class="main-name">
-				  <span><a href="/summoners/${matchServer}/${participantsBottom[1].summoner_name}">${participantsBottom[1].summoner_name}</a></span>
-				  </td>
-				  <td class="main-kda"></td>
-				  <td class="main-damage"></td>
-				  <td class="main-cs"></td>
-				  <td class="main-items"></td>
-			    </tr>
-			    <tr>
-				  <td class="main-champion">
-				    <div class="main-icon">
-					  <img src="${RIOTCDNURI}/${latestVersion}/img/champion/${checkChamp(participantsBottom[2].champ_key)[1]}.png" width="32" height="32">
-					  <span class="main-champ-level">${participantsBottom[2].champ_level}</span>
+					<div class="item4">
+					  ${participantsBottom[0].item4}
 					</div>
-				  </td>
-				  <td class="main-spells">
-	  				<img src="${RIOTCDNURI}/${latestVersion}/img/spell/${SPELL[participantsBottom[2].spell1]}.png" width="16" height="16">
-	  				<img src="${RIOTCDNURI}/${latestVersion}/img/spell/${SPELL[participantsBottom[2].spell2]}.png" width="16" height="16">			  
-				  </td>
-				  <td class="main-runes">
-					<img class="rune-top" src="${RIOTCDNURI}/img/${mainRunes.runeBottom2[0][0]}" width="16" height="16">
-					<img src="${RIOTCDNURI}/img/${mainRunes.runeBottom2[1][0]}" width="16" height="16">
-				  </td>
-				  <td class="main-name">
-				  <span><a href="/summoners/${matchServer}/${participantsBottom[2].summoner_name}">${participantsBottom[2].summoner_name}</a></span>
-				  </td>
-				  <td class="main-kda"></td>
-				  <td class="main-damage"></td>
-				  <td class="main-cs"></td>
-				  <td class="main-items"></td>
-			    </tr>
-			    <tr>
-				  <td class="main-champion">
-				    <div class="main-icon">
-					  <img src="${RIOTCDNURI}/${latestVersion}/img/champion/${checkChamp(participantsBottom[3].champ_key)[1]}.png" width="32" height="32">
-					  <span class="main-champ-level">${participantsBottom[3].champ_level}</span>
+					<div class="item5">
+					  ${participantsBottom[0].item5}
 					</div>
-				  </td>
-				  <td class="main-spells">
-	  				<img src="${RIOTCDNURI}/${latestVersion}/img/spell/${SPELL[participantsBottom[3].spell1]}.png" width="16" height="16">
-	  				<img src="${RIOTCDNURI}/${latestVersion}/img/spell/${SPELL[participantsBottom[3].spell2]}.png" width="16" height="16">			  
-				  </td>
-				  <td class="main-runes">
-					<img class="rune-top" src="${RIOTCDNURI}/img/${mainRunes.runeBottom3[0][0]}" width="16" height="16">
-					<img src="${RIOTCDNURI}/img/${mainRunes.runeBottom3[1][0]}" width="16" height="16">
-				  </td>
-				  <td class="main-name">
-				  <span><a href="/summoners/${matchServer}/${participantsBottom[3].summoner_name}">${participantsBottom[3].summoner_name}</a></span>
-				  </td>
-				  <td class="main-kda"></td>
-				  <td class="main-damage"></td>
-				  <td class="main-cs"></td>
-				  <td class="main-items"></td>
-			    </tr>
-			    <tr>
-				  <td class="main-champion">
-				    <div class="main-icon">
-					  <img src="${RIOTCDNURI}/${latestVersion}/img/champion/${checkChamp(participantsBottom[4].champ_key)[1]}.png" width="32" height="32">
-					  <span class="main-champ-level">${participantsBottom[4].champ_level}</span>
+					<div class="item6">
+					  ${participantsBottom[0].item6}
 					</div>
-				  </td>
-				  <td class="main-spells">
-	  				<img src="${RIOTCDNURI}/${latestVersion}/img/spell/${SPELL[participantsBottom[4].spell1]}.png" width="16" height="16">
-	  				<img src="${RIOTCDNURI}/${latestVersion}/img/spell/${SPELL[participantsBottom[4].spell2]}.png" width="16" height="16">			  
-				  </td>
-				  <td class="main-runes">
-					<img class="rune-top" src="${RIOTCDNURI}/img/${mainRunes.runeBottom4[0][0]}" width="16" height="16">
-					<img src="${RIOTCDNURI}/img/${mainRunes.runeBottom4[1][0]}" width="16" height="16">
-				  </td>
-				  <td class="main-name">
-				  <span><a href="/summoners/${matchServer}/${participantsBottom[4].summoner_name}">${participantsBottom[4].summoner_name}</a></span>
-				  </td>
-				  <td class="main-kda"></td>
-				  <td class="main-damage"></td>
-				  <td class="main-cs"></td>
-				  <td class="main-items"></td>
-			    </tr>				
-			  </tbody>
-		    </table>
+				  </div>
+				</div>
+			  </li>
+			  <li>
+				<div class="main-icon">
+				  <img src="${RIOTCDNURI}/${latestVersion}/img/champion/${checkChamp(participantsBottom[1].champ_key)[1]}.png" width="32" height="32">
+				  <span class="main-champ-level">${participantsBottom[1].champ_level}</span>
+				</div>
+				<div class="main-spells">
+	  			  <img src="${RIOTCDNURI}/${latestVersion}/img/spell/${SPELL[participantsBottom[1].spell1]}.png" width="16" height="16">
+	  			  <img src="${RIOTCDNURI}/${latestVersion}/img/spell/${SPELL[participantsBottom[1].spell2]}.png" width="16" height="16">
+				</div>
+				<div class="main-runes">
+				  <img class="rune-top" src="${RIOTCDNURI}/img/${mainRunes.runeBottom1[0][0]}" width="16" height="16">
+				  <img src="${RIOTCDNURI}/img/${mainRunes.runeBottom1[1][0]}" width="16" height="16">
+				</div>
+				<div class="main-name">
+	  			  <span><a href="/summoners/${matchServer}/${participantsBottom[1].summoner_name}">${participantsBottom[1].summoner_name}</a></span>
+				</div>
+				<div class="main-kda">
+				  <div class="main-k-d-a">
+				    <span class="main-kills">${participantsBottom[1].kills}</span>
+				    /
+				    <span class="main-deaths">${participantsBottom[1].deaths}</span>
+				    /
+				    <span class="main-assists">${participantsBottom[1].assists}</span>
+				    <span>(${getFloatFixed(((participantsBottom[1].kills+participantsBottom[1].assists)/bottomTotalKills) * 100, 0)}%)</span>
+				  </div>
+				  <div class="main-kda-ratio">
+				    <span class="main-ratio">${participantsBottom[1].kda}</span>
+				  </div>
+				</div>
+				<div class="main-damage">
+	  			  <div class="dealt">${participantsBottom[1].damage_dealt}</div>
+				  <div class="blank"></div>
+				  <div class="progress">
+				    <div class="fill" style="width: ${getFloatFixed((participantsBottom[1].damage_dealt/bottomTotalDamageDealt) * 100, 0)}%"></div>
+				  </div>
+				</div>
+				<div class="main-cs">
+	  			  <div class="cs">${participantsBottom[1].minions_killed}</div>
+				  <div class="blank"></div>
+				  <div class="main-min-cs">분당 ${participantsBottom[1].min_minions_killed}</div>
+				</div>
+				<div class="main-item">
+				  <div class="items">
+				    <div class="item0">
+					  ${participantsBottom[1].item0}
+				    </div>
+				    <div class="item1">
+					  ${participantsBottom[1].item1}
+				    </div>
+					<div class="item2">
+					  ${participantsBottom[1].item2}
+					</div>
+					<div class="item3">
+					  ${participantsBottom[1].item3}
+					</div>
+					<div class="item4">
+					  ${participantsBottom[1].item4}
+					</div>
+					<div class="item5">
+					  ${participantsBottom[1].item5}
+					</div>
+					<div class="item6">
+					  ${participantsBottom[1].item6}
+					</div>
+				  </div>
+				</div>
+			  </li>
+			  <li>
+				<div class="main-icon">
+				  <img src="${RIOTCDNURI}/${latestVersion}/img/champion/${checkChamp(participantsBottom[2].champ_key)[1]}.png" width="32" height="32">
+				  <span class="main-champ-level">${participantsBottom[2].champ_level}</span>
+				</div>
+				<div class="main-spells">
+	  			  <img src="${RIOTCDNURI}/${latestVersion}/img/spell/${SPELL[participantsBottom[2].spell1]}.png" width="16" height="16">
+	  			  <img src="${RIOTCDNURI}/${latestVersion}/img/spell/${SPELL[participantsBottom[2].spell2]}.png" width="16" height="16">
+				</div>
+				<div class="main-runes">
+				  <img class="rune-top" src="${RIOTCDNURI}/img/${mainRunes.runeBottom2[0][0]}" width="16" height="16">
+				  <img src="${RIOTCDNURI}/img/${mainRunes.runeBottom2[1][0]}" width="16" height="16">
+				</div>
+				<div class="main-name">
+	  			  <span><a href="/summoners/${matchServer}/${participantsBottom[2].summoner_name}">${participantsBottom[2].summoner_name}</a></span>
+				</div>
+				<div class="main-kda">
+				  <div class="main-k-d-a">
+				    <span class="main-kills">${participantsBottom[2].kills}</span>
+				    /
+				    <span class="main-deaths">${participantsBottom[2].deaths}</span>
+				    /
+				    <span class="main-assists">${participantsBottom[2].assists}</span>
+				    <span>(${getFloatFixed(((participantsBottom[2].kills+participantsBottom[2].assists)/bottomTotalKills) * 100, 0)}%)</span>
+				  </div>
+				  <div class="main-kda-ratio">
+				    <span class="main-ratio">${participantsBottom[2].kda}</span>
+				  </div>
+				</div>
+				<div class="main-damage">
+	  			  <div class="dealt">${participantsBottom[2].damage_dealt}</div>
+				  <div class="blank"></div>
+				  <div class="progress">
+				    <div class="fill" style="width: ${getFloatFixed((participantsBottom[2].damage_dealt/bottomTotalDamageDealt) * 100, 0)}%"></div>
+				  </div>
+				</div>
+				<div class="main-cs">
+	  			  <div class="cs">${participantsBottom[2].minions_killed}</div>
+				  <div class="blank"></div>
+				  <div class="main-min-cs">분당 ${participantsBottom[2].min_minions_killed}</div>
+				</div>
+				<div class="main-item">
+				  <div class="items">
+				    <div class="item0">
+					  ${participantsBottom[2].item0}
+				    </div>
+				    <div class="item1">
+					  ${participantsBottom[2].item1}
+				    </div>
+					<div class="item2">
+					  ${participantsBottom[2].item2}
+					</div>
+					<div class="item3">
+					  ${participantsBottom[2].item3}
+					</div>
+					<div class="item4">
+					  ${participantsBottom[2].item4}
+					</div>
+					<div class="item5">
+					  ${participantsBottom[2].item5}
+					</div>
+					<div class="item6">
+					  ${participantsBottom[2].item6}
+					</div>
+				  </div>
+				</div>
+			  </li>
+			  <li>
+				<div class="main-icon">
+				  <img src="${RIOTCDNURI}/${latestVersion}/img/champion/${checkChamp(participantsBottom[3].champ_key)[1]}.png" width="32" height="32">
+				  <span class="main-champ-level">${participantsBottom[3].champ_level}</span>
+				</div>
+				<div class="main-spells">
+	  			  <img src="${RIOTCDNURI}/${latestVersion}/img/spell/${SPELL[participantsBottom[3].spell1]}.png" width="16" height="16">
+	  			  <img src="${RIOTCDNURI}/${latestVersion}/img/spell/${SPELL[participantsBottom[3].spell2]}.png" width="16" height="16">
+				</div>
+				<div class="main-runes">
+				  <img class="rune-top" src="${RIOTCDNURI}/img/${mainRunes.runeBottom3[0][0]}" width="16" height="16">
+				  <img src="${RIOTCDNURI}/img/${mainRunes.runeBottom3[1][0]}" width="16" height="16">
+				</div>
+				<div class="main-name">
+	  			  <span><a href="/summoners/${matchServer}/${participantsBottom[3].summoner_name}">${participantsBottom[3].summoner_name}</a></span>
+				</div>
+				<div class="main-kda">
+				  <div class="main-k-d-a">
+				    <span class="main-kills">${participantsBottom[3].kills}</span>
+				    /
+				    <span class="main-deaths">${participantsBottom[3].deaths}</span>
+				    /
+				    <span class="main-assists">${participantsBottom[3].assists}</span>
+				    <span>(${getFloatFixed(((participantsBottom[3].kills+participantsBottom[3].assists)/bottomTotalKills) * 100, 0)}%)</span>
+				  </div>
+				  <div class="main-kda-ratio">
+				    <span class="main-ratio">${participantsBottom[3].kda}</span>
+				  </div>
+				</div>
+				<div class="main-damage">
+	  			  <div class="dealt">${participantsBottom[3].damage_dealt}</div>
+				  <div class="blank"></div>
+				  <div class="progress">
+				    <div class="fill" style="width: ${getFloatFixed((participantsBottom[3].damage_dealt/bottomTotalDamageDealt) * 100, 0)}%"></div>
+				  </div>
+				</div>
+				<div class="main-cs">
+	  			  <div class="cs">${participantsBottom[3].minions_killed}</div>
+				  <div class="blank"></div>
+				  <div class="main-min-cs">분당 ${participantsBottom[3].min_minions_killed}</div>
+				</div>
+				<div class="main-item">
+				  <div class="items">
+				    <div class="item0">
+					  ${participantsBottom[3].item0}
+				    </div>
+				    <div class="item1">
+					  ${participantsBottom[3].item1}
+				    </div>
+					<div class="item2">
+					  ${participantsBottom[3].item2}
+					</div>
+					<div class="item3">
+					  ${participantsBottom[3].item3}
+					</div>
+					<div class="item4">
+					  ${participantsBottom[3].item4}
+					</div>
+					<div class="item5">
+					  ${participantsBottom[3].item5}
+					</div>
+					<div class="item6">
+					  ${participantsBottom[3].item6}
+					</div>
+				  </div>
+				</div>
+			  </li>
+			  <li>
+				<div class="main-icon">
+				  <img src="${RIOTCDNURI}/${latestVersion}/img/champion/${checkChamp(participantsBottom[4].champ_key)[1]}.png" width="32" height="32">
+				  <span class="main-champ-level">${participantsBottom[4].champ_level}</span>
+				</div>
+				<div class="main-spells">
+	  			  <img src="${RIOTCDNURI}/${latestVersion}/img/spell/${SPELL[participantsBottom[4].spell1]}.png" width="16" height="16">
+	  			  <img src="${RIOTCDNURI}/${latestVersion}/img/spell/${SPELL[participantsBottom[4].spell2]}.png" width="16" height="16">
+				</div>
+				<div class="main-runes">
+				  <img class="rune-top" src="${RIOTCDNURI}/img/${mainRunes.runeBottom4[0][0]}" width="16" height="16">
+				  <img src="${RIOTCDNURI}/img/${mainRunes.runeBottom4[1][0]}" width="16" height="16">
+				</div>
+				<div class="main-name">
+	  			  <span><a href="/summoners/${matchServer}/${participantsBottom[4].summoner_name}">${participantsBottom[4].summoner_name}</a></span>
+				</div>
+				<div class="main-kda">
+				  <div class="main-k-d-a">
+				    <span class="main-kills">${participantsBottom[4].kills}</span>
+				    /
+				    <span class="main-deaths">${participantsBottom[4].deaths}</span>
+				    /
+				    <span class="main-assists">${participantsBottom[4].assists}</span>
+				    <span>(${getFloatFixed(((participantsBottom[4].kills+participantsBottom[4].assists)/bottomTotalKills) * 100, 0)}%)</span>
+				  </div>
+				  <div class="main-kda-ratio">
+				    <span class="main-ratio">${participantsBottom[4].kda}</span>
+				  </div>
+				</div>
+				<div class="main-damage">
+	  			  <div class="dealt">${participantsBottom[4].damage_dealt}</div>
+				  <div class="blank"></div>
+				  <div class="progress">
+				    <div class="fill" style="width: ${getFloatFixed((participantsBottom[4].damage_dealt/bottomTotalDamageDealt) * 100, 0)}%"></div>
+				  </div>
+				</div>
+				<div class="main-cs">
+	  			  <div class="cs">${participantsBottom[4].minions_killed}</div>
+				  <div class="blank"></div>
+				  <div class="main-min-cs">분당 ${participantsBottom[4].min_minions_killed}</div>
+				</div>
+				<div class="main-item">
+				  <div class="items">
+				    <div class="item0">
+					  ${participantsBottom[4].item0}
+				    </div>
+				    <div class="item1">
+					  ${participantsBottom[4].item1}
+				    </div>
+					<div class="item2">
+					  ${participantsBottom[4].item2}
+					</div>
+					<div class="item3">
+					  ${participantsBottom[4].item3}
+					</div>
+					<div class="item4">
+					  ${participantsBottom[4].item4}
+					</div>
+					<div class="item5">
+					  ${participantsBottom[4].item5}
+					</div>
+					<div class="item6">
+					  ${participantsBottom[4].item6}
+					</div>
+				  </div>
+				</div>
+			  </li>
+			</ul>
 		  </div>
 		</div>`;
-	
-	  matchWrapper2.append(recentGameMain);
-	  matchWrapper2.css('width', '100%');
+
+	  const recentGameWrapper = $(`#match${i}-wrapper`);
+	  recentGameWrapper.append(recentGameMain);
+	  recentGameWrapper.css('width', '100%');
 	
 	  const kills = Number($(`${matchNum} > div > .info > .kda > .k-d-a > .kills`).text());
 	  const assists = Number($(`${matchNum} > div > .info > .kda > .k-d-a > .assists`).text());
@@ -416,24 +847,48 @@ Promise.all(matchIds)
 	  else teamId.html(` 킬관여 <span>${getFloatFixed(((kills+assists)/redTotalKills) * 100, 0)}%</span>`);
 		
 	  const gameResultText = $(`${matchNum} > div > .game > .result`);
-
+	  const gameResultText2 = $(`#recent-game-main${i} > div > div > div > .result`);
       const gameResult = $(`${matchNum} > div`).attr('result');
+	  const gameResult2 = $(`#recent-game-main${i} > div`).attr('result');
+
+	  const recentGameMainUl = $(`#recent-game-main${i} > div > ul`);
+
       if (gameResult == 'WIN') {
-	    matchWrapper.css('background', '#406893');
+		matchWrapper.css('background', '#28344E');
+		$(`#match-${i} > .recent-game-header > .show-game-main`).css('background', '#2F436E');
 		gameResultText.css('color', '#408FFF');
 	  }
       else {
-		matchWrapper.css('background', '#683240');
+		matchWrapper.css('background', '#59343B');
+		$(`#match-${i} > .recent-game-header > .show-game-main`).css('background', '#703C47');
 		gameResultText.css('color', '#cc0000');
+	  }
+
+      if (gameResult2 == 'WIN') {
+		recentGameMainUl[0].style.background = '#28344E';
+		recentGameMainUl[1].style.background = '#59343B';
+		gameResultText2[0].style.color = '#408FFF';
+		gameResultText2[1].style.color = '#cc0000';
+	  }
+      else {
+		recentGameMainUl[0].style.background = '#59343B';
+		recentGameMainUl[1].style.background = '#2F436E';
+		gameResultText2[0].style.color = '#cc0000';
+		gameResultText2[1].style.color = '#408FFF';
 	  }
 
 	  const multiKill = $(`${matchNum} > div > .info > .kda > .multi_kill`);
 	  if (multiKill.attr('result')) multiKill.css('font-size', '12px').css('width', '62px').css('height', '26px')
 		  .css('background', '#8B0000').css('margin-top', '12px').css('text-align', 'center').css('display', 'flex')
 		  .css('justify-content', 'center').css('align-items', 'center').css('border-radius', '1em');
+
+	//   $("#div_load_image").hide();
+	//   $('.match-record-wrapper').css('display', 'grid');
+
+	//   break
     }
-   $("#div_load_image").hide();
-   $('.match-record-wrapper').css('display', 'grid');
+	$("#div_load_image").hide();
+	$('.match-record-wrapper').show();
   });
 
 function recentGame(gameData, summonerName) {
@@ -443,10 +898,10 @@ function recentGame(gameData, summonerName) {
   const blueTeamWin = gameData.team100_win;
   const redTeamWin = gameData.team200_win;
 
-  const itemUri = 'https://ddragon.bangingheads.net/cdn/latest/img/item';
-
   let blueTotalKills = 0;
   let redTotalKills = 0;
+  let blueTotalDamageDealt = 0;
+  let redTotalDamageDealt = 0;
   let recentGameHeader = ``;
   let participantsData = {participantsBlue:[], participantsRed:[], topTeamId:'', blueTeamWin, redTeamWin};
   let userNameBlue = ``;
@@ -477,12 +932,13 @@ function recentGame(gameData, summonerName) {
     const kills = participants.kills;
     const deaths = participants.deaths;
     const assists = participants.assists;
+	const damageDealt = participants.damage_dealt;
     const minionsKilled = participants.minions_killed;
     const minMinionsKilled = getFloatFixed(minionsKilled/(gameData.duration/60), 1);
     const visionWards = participants.vision_wards_bought;
     const teamId = participants.team_id;
+    let kda = `${participants.kda}:1`;
 	let multiKill = participants.multi_kill;
-    let kda = participants.kda;
 	
 	let kdaColor;
 	if (kda < 3) kdaColor = '#808080';
@@ -504,29 +960,27 @@ function recentGame(gameData, summonerName) {
       gameResultKo = '패배';
     }
 
-    let itemTag0;
-    let itemTag1;
-    let itemTag2;
-    let itemTag3;
-    let itemTag4;
-    let itemTag5;
-    let itemTag6;
-    if (item0 != 0) itemTag0 = `<img src="${itemUri}/${item0}.png" width="26" height="26" alt="item0">`;
-    else itemTag0 = `<div class="item0"></div>`;
-    if (item1 != 0) itemTag1 = `<img src="${itemUri}/${item1}.png" width="26" height="26" alt="item1">`;
-    else itemTag1 = `<div class="item1"></div>`;
-    if (item2 != 0) itemTag2 = `<img src="${itemUri}/${item2}.png" width="26" height="26" alt="item2">`;
-    else itemTag2 = `<div class="item2"></div>`;
-    if (item3 != 0) itemTag3 = `<img src="${itemUri}/${item3}.png" width="26" height="26" alt="item3">`;
-    else itemTag3 = `<div class="item3"></div>`;
-    if (item4 != 0) itemTag4 = `<img src="${itemUri}/${item4}.png" width="26" height="26" alt="item4">`;
-    else itemTag4 = `<div class="item4"></div>`;
-    if (item5 != 0) itemTag5 = `<img src="${itemUri}/${item5}.png" width="26" height="26" alt="item5">`;
-    else itemTag5 = `<div class="item5"></div>`;
-    if (item6 != 0) itemTag6 = `<img src="${itemUri}/${item6}.png" width="26" height="26" alt="item6">`;
-    else itemTag6 = `<div class="item6"></div>`;
+    let itemTag = [];
+
+	for(let i=0; i<7; i++) {
+	  const item = participants[`item${i}`];
+	  if (item != 0) itemTag.push(`<img src="${itemUri}/${item}.png" width="26" height="26" alt="item0">`);
+	  else itemTag.push(`<div class="item0"></div>`);
+
+	  participants[`item${i}`] = itemTag[i];
+	} 
+
+	// for (let i=0; i<7; i++) {
+	//   participants[`item${i}`] = itemTagi
+	//   console.log(itemTagi)
+	// }
 	
-    if (deaths == 0) kda = 'perpect';
+    if (deaths == 0) { 
+	  kda = 'perpect';
+	  participants.kda = 'perpect';
+	} else participants.kda = kda;
+
+	participants.min_minions_killed = minMinionsKilled;
 
     if (pSummonerName == summonerName) {
       recentGameHeader += `
@@ -567,7 +1021,7 @@ function recentGame(gameData, summonerName) {
                 <span class="assists">${assists}</span>
               </div>
               <div class="kda_ratio">
-                <span class="ratio">${kda}:1</span>
+                <span class="ratio">${kda}</span>
                 평점
               </div>
 			  <div class="multi_kill" result="${multiKill}">
@@ -585,25 +1039,25 @@ function recentGame(gameData, summonerName) {
             </div>
             <div class="items">
               <div class="item0">
-                ${itemTag0}
+                ${itemTag[0]}
               </div>
               <div class="item1">
-                ${itemTag1}
+                ${itemTag[1]}
               </div>
               <div class="item2">
-                ${itemTag2}
+                ${itemTag[2]}
               </div>
               <div class="item3">
-                ${itemTag3}
+                ${itemTag[3]}
               </div>
               <div class="item4">
-                ${itemTag4}
+                ${itemTag[4]}
               </div>
               <div class="item5">
-                ${itemTag5}
+                ${itemTag[5]}
               </div>
               <div class="item6">
-                ${itemTag6}
+                ${itemTag[6]}
               </div>
             </div>
           </div>
@@ -612,12 +1066,14 @@ function recentGame(gameData, summonerName) {
         </div>`;
 	  if (teamId == 100) {
 		blueTotalKills += kills;
+		blueTotalDamageDealt += damageDealt;
 		participantsData.participantsBlue.push(participants);
 		participantsData.topTeamId = participants.team_id;
 	    userNameBlue += `<li><div class="p-icon"><img src="${champImgSrc}" weight="16" height="16" alt="${champNameId[1]}"></div><a href="/summoners/${matchServer}/${pSummonerName}" style="font-weight: bold;">${pSummonerName}</a></li>`;
 	  }
 	  else {
 		redTotalKills += kills;
+		redTotalDamageDealt += damageDealt;
 		participantsData.participantsRed.push(participants);
 		participantsData.topTeamId = participants.team_id;
 	    userNameRed += `<li><div class="p-icon"><img src="${champImgSrc}" weight="16" height="16" alt="${champNameId[1]}"></div><a href="/summoners/${matchServer}/${pSummonerName}" style="font-weight: bold;">${pSummonerName}</a></li>`;
@@ -625,17 +1081,20 @@ function recentGame(gameData, summonerName) {
     } else {
 	  if (teamId == 100) {
 	    blueTotalKills += kills;
+		blueTotalDamageDealt += damageDealt;
 		participantsData.participantsBlue.push(participants);
 	    userNameBlue += `<li><div class="p-icon"><img src="${champImgSrc}" weight="16" height="16" alt="${champNameId[1]}"></div><a href="/summoners/${matchServer}/${pSummonerName}">${pSummonerName}</a></li>`;
 	  }
     else {
 	    redTotalKills += kills;
+		redTotalDamageDealt += damageDealt;
 		participantsData.participantsRed.push(participants);
 	    userNameRed += `<li><div class="p-icon"><img src="${champImgSrc}" weight="16" height="16" alt="${champNameId[1]}"></div><a href="/summoners/${matchServer}/${pSummonerName}">${pSummonerName}</a></li>`;
 	  }
 	}
   }
-  return {recentGameHeader, participantsData, userNameBlue, userNameRed, blueTotalKills, redTotalKills}
+  return { recentGameHeader, participantsData, userNameBlue, userNameRed, 
+		blueTotalKills, redTotalKills, blueTotalDamageDealt, redTotalDamageDealt }
   // 100 blue 200 red
 }
 

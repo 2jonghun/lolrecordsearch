@@ -165,7 +165,7 @@ class RiotApi {
 	
   #rankParse(body) {
     const body1 = body[0]
-	const body2 = body[1]
+	  const body2 = body[1]
 	
 	if (body1.queueType == 'RANKED_SOLO_5x5') {
 	  return {solo: body1, free: body2};
@@ -205,8 +205,7 @@ class RiotApi {
     const item6 = p.item6;
     const goldEarned = p.goldEarned;
     const damageDealt = p.totalDamageDealtToChampions;
-    const minionsKilled = p.totalMinionsKilled
-      +p.neutralMinionsKilled;
+    const minionsKilled = p.totalMinionsKilled+p.neutralMinionsKilled;
     const visionScore = p.visionScore;
     const visionWardsBought = p.visionWardsBoughtInGame;
     const teamId = p.teamId;

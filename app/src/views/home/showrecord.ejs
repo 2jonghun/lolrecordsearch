@@ -45,21 +45,20 @@
 
       <div class="matchrecord">
       <% if (info.matchList) { %>
+        <div id="div_load_image" style="position:absolute; top:50%; left:50%;width:0px;height:0px; z-index:9999; background:#f0f0f0; filter:alpha(opacity=50); opacity:alpha*0.5; margin:auto; padding:0; text-align:center">
+          <img src="/loading/loading.gif" style="width:100px; height:100px;">
+        </div>
         <div class="matchrecord__left"></div>
-		  <div id="div_load_image" style="position:absolute; top:50%; left:50%;width:0px;height:0px; z-index:9999; background:#f0f0f0; filter:alpha(opacity=50); opacity:alpha*0.5; margin:auto; padding:0; text-align:center">
-		    <img src="/loading/loading.gif" style="width:100px; height:100px;">
-		  </div>
         <div class="matchrecord__right">
-          <% for(let i = 0; i < info.matchList.length; i++) { %>
-			<div id="match<%= i %>-wrapper" class="match-wrapper">
-			  <div id="match-<%= i %>" class="match-record-wrapper" data-server="<%= info.reqServer %>" data-matchid="<%= info.matchList[i] %>">
-              </div>
-			</div>
+        <% for(let i = 0; i < info.matchList.length; i++) { %>
+			    <div id="match<%= i %>-wrapper" class="match-wrapper">
+			      <div id="match-<%= i %>" class="match-record-wrapper" data-server="<%= info.reqServer %>" data-matchid="<%= info.matchList[i] %>"></div>
+			    </div>
           <% } %>
-        </div>        
+      </div>        
       <% } else { %>
         <div class="notmatchrecord">
-          <span class="test1">전적이 없습니다.</span>
+          <span class="nomatch">전적이 없습니다.</span>
         </div>
       <% } %>
       </div>
