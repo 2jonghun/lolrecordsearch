@@ -29,7 +29,13 @@ Promise.all(matchIds)
   .then(async res => {
     for (let i=0; i<res.length; i++) {
 	  const matchNum = `#match-${i}`;
-      const gameData = await res[i].json();
+	  const gameData = await res[i].json();
+	  const queueId = gameData.queueId;
+	  if (gameData.duration == 0 || queueId == 2000 || queueId == 2010 || queueId == 2020) {
+		const mrwTag = document.querySelector(`#match${i}-wrapper`);
+		mrwTag.parentNode.removeChild(mrwTag);
+		continue;
+	  }
       const recentGameData = recentGame(gameData, summonerName);
 	  const recentGameHeader = recentGameData.recentGameHeader;
 	  const participantsData = recentGameData.participantsData;
@@ -42,8 +48,7 @@ Promise.all(matchIds)
 	  const userNameRed = recentGameData.userNameRed;
 	  const blueTotalKills = recentGameData.blueTotalKills;
 	  const redTotalKills = recentGameData.redTotalKills;
-	  const blueTotalDamageDealt = recentGameData.blueTotalDamageDealt;
-	  const redTotalDamageDealt = recentGameData.redTotalDamageDealt;
+	  const bestDamageDealt = recentGameData.bestDamageDealt;
 	  
       const matchWrapper = $(matchNum);
       matchWrapper.append(recentGameHeader);
@@ -85,10 +90,8 @@ Promise.all(matchIds)
 	  if (topTeamId == 100) { 
 		topTeam = '블루팀';
 		topTotalKills = blueTotalKills;
-		topTotalDamageDealt = blueTotalDamageDealt;
 		bottomTeam = '레드팀';
 		bottomTotalKills = redTotalKills;
-		bottomTotalDamageDealt = redTotalDamageDealt;
 		participantsTop = participantsBlue;
 		participantsBottom = participantsRed;
 
@@ -107,10 +110,8 @@ Promise.all(matchIds)
 	  else { 
 	    topTeam = '레드팀';
 		topTotalKills = redTotalKills;
-		topTotalDamageDealt = redTotalDamageDealt;
 		bottomTeam = '블루팀';
 		bottomTotalKills = blueTotalKills;
-		bottomTotalDamageDealt = blueTotalDamageDealt;
 		participantsTop = participantsRed;
 		participantsBottom = participantsBlue;
 
@@ -143,11 +144,11 @@ Promise.all(matchIds)
 	    <div id="recent-game-main${i}" class="recent-game-main-hide">
 	      <div id="result-top"  result="${gameResultEnTop}">
 	  		<div class="main-header">
-			  <div class="main-header-result" style="width: 25%;"><span class="result">${gameResultKoTop}</span> (${topTeam})</div>
+			  <div class="main-header-result" style="width: 26%;"><span class="result">${gameResultKoTop}</span> (${topTeam})</div>
 			  <div class="main-header-kda" style="width: 15%;">KDA</div>
-			  <div class="main-header-damage" style="width: 20%;">딜량</div>
-			  <div class="main-header-cs" style="width: 10%;">CS</div>
-			  <div class="main-header-item" style="width: 30%;">아이템</div>
+			  <div class="main-header-damage" style="width: 19%;">딜량</div>
+			  <div class="main-header-cs" style="width: 11%;">CS</div>
+			  <div class="main-header-item" style="width: 29%;">아이템</div>
 			</div>
 			<ul>
 			  <li>
@@ -183,7 +184,7 @@ Promise.all(matchIds)
 	  			  <div class="dealt">${participantsTop[0].damage_dealt}</div>
 				  <div class="blank"></div>
 				  <div class="progress">
-				    <div class="fill" style="width: ${getFloatFixed((participantsTop[0].damage_dealt/topTotalDamageDealt) * 100, 0)}%"></div>
+				    <div class="fill" style="width: ${getFloatFixed((participantsTop[0].damage_dealt/bestDamageDealt) * 100, 0)}%"></div>
 				  </div>
 				</div>
 				<div class="main-cs">
@@ -250,7 +251,7 @@ Promise.all(matchIds)
 	  			  <div class="dealt">${participantsTop[1].damage_dealt}</div>
 				  <div class="blank"></div>
 				  <div class="progress">
-				    <div class="fill" style="width: ${getFloatFixed((participantsTop[1].damage_dealt/topTotalDamageDealt) * 100, 0)}%"></div>
+				    <div class="fill" style="width: ${getFloatFixed((participantsTop[1].damage_dealt/bestDamageDealt) * 100, 0)}%"></div>
 				  </div>
 				</div>
 				<div class="main-cs">
@@ -317,7 +318,7 @@ Promise.all(matchIds)
 	  			  <div class="dealt">${participantsTop[2].damage_dealt}</div>
 				  <div class="blank"></div>
 				  <div class="progress">
-				    <div class="fill" style="width: ${getFloatFixed((participantsTop[2].damage_dealt/topTotalDamageDealt) * 100, 0)}%"></div>
+				    <div class="fill" style="width: ${getFloatFixed((participantsTop[2].damage_dealt/bestDamageDealt) * 100, 0)}%"></div>
 				  </div>
 				</div>
 				<div class="main-cs">
@@ -384,7 +385,7 @@ Promise.all(matchIds)
 	  			  <div class="dealt">${participantsTop[3].damage_dealt}</div>
 				  <div class="blank"></div>
 				  <div class="progress">
-				    <div class="fill" style="width: ${getFloatFixed((participantsTop[3].damage_dealt/topTotalDamageDealt) * 100, 0)}%"></div>
+				    <div class="fill" style="width: ${getFloatFixed((participantsTop[3].damage_dealt/bestDamageDealt) * 100, 0)}%"></div>
 				  </div>
 				</div>
 				<div class="main-cs">
@@ -451,7 +452,7 @@ Promise.all(matchIds)
 	  			  <div class="dealt">${participantsTop[4].damage_dealt}</div>
 				  <div class="blank"></div>
 				  <div class="progress">
-				    <div class="fill" style="width: ${getFloatFixed((participantsTop[4].damage_dealt/topTotalDamageDealt) * 100, 0)}%"></div>
+				    <div class="fill" style="width: ${getFloatFixed((participantsTop[4].damage_dealt/bestDamageDealt) * 100, 0)}%"></div>
 				  </div>
 				</div>
 				<div class="main-cs">
@@ -489,11 +490,11 @@ Promise.all(matchIds)
 		  </div>
 	      <div id="result-bottom" result="${gameResultEnBottom}">
 	  		<div class="main-header">
-			  <div class="main-header-result" style="width: 25%;"><span class="result">${gameResultKoBottom}</span> (${bottomTeam})</div>
+			  <div class="main-header-result" style="width: 26%;"><span class="result">${gameResultKoTop}</span> (${topTeam})</div>
 			  <div class="main-header-kda" style="width: 15%;">KDA</div>
-			  <div class="main-header-damage" style="width: 20%;">딜량</div>
-			  <div class="main-header-cs" style="width: 10%;">CS</div>
-			  <div class="main-header-item" style="width: 30%;">아이템</div>
+			  <div class="main-header-damage" style="width: 19%;">딜량</div>
+			  <div class="main-header-cs" style="width: 11%;">CS</div>
+			  <div class="main-header-item" style="width: 29%;">아이템</div>
 			</div>
 			<ul>
 			  <li>
@@ -529,7 +530,7 @@ Promise.all(matchIds)
 	  			  <div class="dealt">${participantsBottom[0].damage_dealt}</div>
 				  <div class="blank"></div>
 				  <div class="progress">
-				    <div class="fill" style="width: ${getFloatFixed((participantsBottom[0].damage_dealt/bottomTotalDamageDealt) * 100, 0)}%"></div>
+				    <div class="fill" style="width: ${getFloatFixed((participantsBottom[0].damage_dealt/bestDamageDealt) * 100, 0)}%"></div>
 				  </div>
 				</div>
 				<div class="main-cs">
@@ -596,7 +597,7 @@ Promise.all(matchIds)
 	  			  <div class="dealt">${participantsBottom[1].damage_dealt}</div>
 				  <div class="blank"></div>
 				  <div class="progress">
-				    <div class="fill" style="width: ${getFloatFixed((participantsBottom[1].damage_dealt/bottomTotalDamageDealt) * 100, 0)}%"></div>
+				    <div class="fill" style="width: ${getFloatFixed((participantsBottom[1].damage_dealt/bestDamageDealt) * 100, 0)}%"></div>
 				  </div>
 				</div>
 				<div class="main-cs">
@@ -663,7 +664,7 @@ Promise.all(matchIds)
 	  			  <div class="dealt">${participantsBottom[2].damage_dealt}</div>
 				  <div class="blank"></div>
 				  <div class="progress">
-				    <div class="fill" style="width: ${getFloatFixed((participantsBottom[2].damage_dealt/bottomTotalDamageDealt) * 100, 0)}%"></div>
+				    <div class="fill" style="width: ${getFloatFixed((participantsBottom[2].damage_dealt/bestDamageDealt) * 100, 0)}%"></div>
 				  </div>
 				</div>
 				<div class="main-cs">
@@ -730,7 +731,7 @@ Promise.all(matchIds)
 	  			  <div class="dealt">${participantsBottom[3].damage_dealt}</div>
 				  <div class="blank"></div>
 				  <div class="progress">
-				    <div class="fill" style="width: ${getFloatFixed((participantsBottom[3].damage_dealt/bottomTotalDamageDealt) * 100, 0)}%"></div>
+				    <div class="fill" style="width: ${getFloatFixed((participantsBottom[3].damage_dealt/bestDamageDealt) * 100, 0)}%"></div>
 				  </div>
 				</div>
 				<div class="main-cs">
@@ -797,7 +798,7 @@ Promise.all(matchIds)
 	  			  <div class="dealt">${participantsBottom[4].damage_dealt}</div>
 				  <div class="blank"></div>
 				  <div class="progress">
-				    <div class="fill" style="width: ${getFloatFixed((participantsBottom[4].damage_dealt/bottomTotalDamageDealt) * 100, 0)}%"></div>
+				    <div class="fill" style="width: ${getFloatFixed((participantsBottom[4].damage_dealt/bestDamageDealt) * 100, 0)}%"></div>
 				  </div>
 				</div>
 				<div class="main-cs">
@@ -881,18 +882,23 @@ Promise.all(matchIds)
 	  if (multiKill.attr('result')) multiKill.css('font-size', '12px').css('width', '62px').css('height', '26px')
 		  .css('background', '#8B0000').css('margin-top', '12px').css('text-align', 'center').css('display', 'flex')
 		  .css('justify-content', 'center').css('align-items', 'center').css('border-radius', '1em');
-
-	//   $("#div_load_image").hide();
-	//   $('.match-record-wrapper').css('display', 'grid');
-
-	//   break
     }
 	$("#div_load_image").hide();
+	const checkMrwTag = document.querySelector('.matchrecord__right');
+	if (!checkMrwTag.hasChildNodes()) {
+	  checkMrwTag.innerHTML = `
+	  	<div class="no-match-record">
+		  <i class="fa-regular fa-circle-xmark"></i>
+		  <span class="no-match">
+		    기록된 전적이 없습니다.
+		  </span>
+		</div>`;
+	}
 	$('.match-record-wrapper').show();
   });
 
 function recentGame(gameData, summonerName) {
-  const gameType = ko[QUEUETYPE[gameData.queueid]];
+  const gameType = ko[QUEUETYPE[gameData.queueId]];
   const gameEndTime = timeForToday(gameData.start_time + gameData.duration * 1000);
   const gameDuration = `${Math.floor(gameData.duration/60)}분 ${(gameData.duration % 60).toString().padStart(2,'0')}초`;
   const blueTeamWin = gameData.team100_win;
@@ -900,8 +906,7 @@ function recentGame(gameData, summonerName) {
 
   let blueTotalKills = 0;
   let redTotalKills = 0;
-  let blueTotalDamageDealt = 0;
-  let redTotalDamageDealt = 0;
+  let bestDamageDealt = 0;
   let recentGameHeader = ``;
   let participantsData = {participantsBlue:[], participantsRed:[], topTeamId:'', blueTeamWin, redTeamWin};
   let userNameBlue = ``;
@@ -919,13 +924,6 @@ function recentGame(gameData, summonerName) {
     const spellImgSrc = `${RIOTCDNURI}/${latestVersion}/img/spell`;
     const spell1 = `${spellImgSrc}/${SPELL[participants.spell1]}.png`;
     const spell2 = `${spellImgSrc}/${SPELL[participants.spell2]}.png`;
-    const item0 = participants.item0;
-    const item1 = participants.item1;
-    const item2 = participants.item2;
-    const item3 = participants.item3;
-    const item4 = participants.item4;
-    const item5 = participants.item5;
-    const item6 = participants.item6;
     const runes = checkRune(participants.rune_main, participants.rune_sub);
     const runeMainSrc = `${RIOTCDNURI}/img/${runes[0][0]}`;
     const runeSubSrc = `${RIOTCDNURI}/img/${runes[1][0]}`;
@@ -937,18 +935,20 @@ function recentGame(gameData, summonerName) {
     const minMinionsKilled = getFloatFixed(minionsKilled/(gameData.duration/60), 1);
     const visionWards = participants.vision_wards_bought;
     const teamId = participants.team_id;
+	const largestMultiKill = participants.largestMultiKill;
     let kda = `${participants.kda}:1`;
-	let multiKill = participants.multi_kill;
+	let multiKill = '';
 	
 	let kdaColor;
 	if (kda < 3) kdaColor = '#808080';
 	else kdaColor = ''
+
+	if (bestDamageDealt < damageDealt) bestDamageDealt = damageDealt;
 	  
-	if (multiKill == 2) multiKill = '더블 킬';
-	else if (multiKill == 3) multiKill = '트리플 킬';
-	else if (multiKill == 4) multiKill = '쿼드라 킬';
-	else if (multiKill == 5) multiKill = '펜타 킬';
-	else multiKill = '';
+	if (largestMultiKill == 2) multiKill = '더블 킬';
+	else if (largestMultiKill == 3) multiKill = '트리플 킬';
+	else if (largestMultiKill == 4) multiKill = '쿼드라 킬';
+	else if (largestMultiKill == 5) multiKill = '펜타 킬';
 	  
     let gameResultEn;
     let gameResultKo;
@@ -968,16 +968,11 @@ function recentGame(gameData, summonerName) {
 	  else itemTag.push(`<div class="item0"></div>`);
 
 	  participants[`item${i}`] = itemTag[i];
-	} 
-
-	// for (let i=0; i<7; i++) {
-	//   participants[`item${i}`] = itemTagi
-	//   console.log(itemTagi)
-	// }
+	}
 	
     if (deaths == 0) { 
-	  kda = 'perpect';
-	  participants.kda = 'perpect';
+	  kda = 'Perpect';
+	  participants.kda = 'Perpect';
 	} else participants.kda = kda;
 
 	participants.min_minions_killed = minMinionsKilled;
@@ -1066,14 +1061,12 @@ function recentGame(gameData, summonerName) {
         </div>`;
 	  if (teamId == 100) {
 		blueTotalKills += kills;
-		blueTotalDamageDealt += damageDealt;
 		participantsData.participantsBlue.push(participants);
 		participantsData.topTeamId = participants.team_id;
 	    userNameBlue += `<li><div class="p-icon"><img src="${champImgSrc}" weight="16" height="16" alt="${champNameId[1]}"></div><a href="/summoners/${matchServer}/${pSummonerName}" style="font-weight: bold;">${pSummonerName}</a></li>`;
 	  }
 	  else {
 		redTotalKills += kills;
-		redTotalDamageDealt += damageDealt;
 		participantsData.participantsRed.push(participants);
 		participantsData.topTeamId = participants.team_id;
 	    userNameRed += `<li><div class="p-icon"><img src="${champImgSrc}" weight="16" height="16" alt="${champNameId[1]}"></div><a href="/summoners/${matchServer}/${pSummonerName}" style="font-weight: bold;">${pSummonerName}</a></li>`;
@@ -1081,20 +1074,18 @@ function recentGame(gameData, summonerName) {
     } else {
 	  if (teamId == 100) {
 	    blueTotalKills += kills;
-		blueTotalDamageDealt += damageDealt;
 		participantsData.participantsBlue.push(participants);
 	    userNameBlue += `<li><div class="p-icon"><img src="${champImgSrc}" weight="16" height="16" alt="${champNameId[1]}"></div><a href="/summoners/${matchServer}/${pSummonerName}">${pSummonerName}</a></li>`;
 	  }
     else {
 	    redTotalKills += kills;
-		redTotalDamageDealt += damageDealt;
 		participantsData.participantsRed.push(participants);
 	    userNameRed += `<li><div class="p-icon"><img src="${champImgSrc}" weight="16" height="16" alt="${champNameId[1]}"></div><a href="/summoners/${matchServer}/${pSummonerName}">${pSummonerName}</a></li>`;
 	  }
 	}
   }
   return { recentGameHeader, participantsData, userNameBlue, userNameRed, 
-		blueTotalKills, redTotalKills, blueTotalDamageDealt, redTotalDamageDealt }
+		blueTotalKills, redTotalKills, bestDamageDealt}
   // 100 blue 200 red
 }
 

@@ -2,14 +2,21 @@
   <% if (value == 0) return %>
   <% return Number(parseFloat(+(Math.round(value+"e+2")+"e-2")).toFixed(fixed)); %>
 <% } %>
+<% const soloTier = solo.tier %>
 <img class="ranked-emblem" src="/ranked-emblems/<%= solo.tier %>.png" alt="ranked-emblem">
 <div class="solo-rank-tier">
   <span class="solo-rank-text">솔로랭크</span>
-  <span class="solo-tier"><%= solo.tier %> <%= solo.rank %></span>
+  <span class="solo-tier">
+    <% if (soloTier == 'CHALLENGER' || soloTier == 'GRANDMASTER' || soloTier == 'MASTER') { %>
+      <%= soloTier %>
+    <% } else { %>
+      <%= soloTier %> <%= solo.rank %>
+    <% } %>
+  </span>
   <span class="solo-ratio"><%= getFloatFixed((solo.wins/(solo.wins+solo.losses) * 100), 2) %>% <%= solo.leaguePoints %>lp</span>
   <div class="solo-data">
     <span class="solo-win"><%= solo.wins %>승</span>
-	&nbsp
+	  &nbsp
     <span class="solo-loss"><%= solo.losses %>패</span>
   </div>
 </div>

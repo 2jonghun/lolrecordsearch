@@ -114,7 +114,7 @@ class RiotApi {
           };
 
           if (res.body.length) {
-			const rankData = this.#rankParse(res.body);
+			      const rankData = this.#rankParse(res.body);
             return { success:true, solo:rankData.solo, free:rankData.free, info:info};
           } else {
             return { success:true, solo:null, free:null, info:info};
@@ -137,6 +137,15 @@ class RiotApi {
       .then(res => {
         if (res.statusCode == 200) {
           const body = res.body;
+
+          const startTime = body.info.gameStartTimestamp;
+          const duration = body.info.gameDuration;
+          const queueId = body.info.queueId;
+
+          if (duration == 0 || queueId == 2000 || queueId == 2010 || queueId == 2020) {
+            return { success:true, body:{startTime, duration, queueId} }
+          }
+
           const participants = [];
           
           for (let i=0; i<body.info.participants.length; i++) {
@@ -147,12 +156,15 @@ class RiotApi {
 
           if(!body.info.gameEndTimestamp) body.info.gameDuration /= 1000;
 
+          const team100_win = body.info.teams[0].win;
+          const team200_win = body.info.teams[1].win;
+
           const matchData = {
-            start_time:body.info.gameStartTimestamp,
-            duration:body.info.gameDuration,
-            queueid:body.info.queueId,
-            team100_win:body.info.teams[0].win,
-            team200_win:body.info.teams[1].win,
+            start_time:startTime,
+            team100_win:team100_win,
+            team200_win:team200_win,
+            duration,
+            queueId,
             participants,
           }
 
@@ -175,9 +187,8 @@ class RiotApi {
   }
 
   #parseParticipants(participants, i) {
-    const getFloatFixed = (value, fixed) => {
-      if (value == 0) return 
-      return Number(parseFloat(+(Math.round(value+"e+2")+"e-2")).toFixed(fixed));
+    const getFloatFixed = (value, fixed) => { 
+      return parseFloat(+(Math.round(value+"e+2")+"e-2")).toFixed(fixed);
     };
 
     const p = participants[i];
@@ -209,10 +220,7 @@ class RiotApi {
     const visionScore = p.visionScore;
     const visionWardsBought = p.visionWardsBoughtInGame;
     const teamId = p.teamId;
-    
-    let multiKill;
-    if (!p.challenges) multiKill = 0;
-    else multiKill = p.challenges.multikills;
+    const largestMultiKill = p.largestMultiKill;
 
     const newParticipants = {
       kills,
@@ -228,7 +236,7 @@ class RiotApi {
       item4,
       item5,
       item6,
-      multi_kill:multiKill,
+      largestMultiKill,
       gold_earned:goldEarned,
       summoner_name:summonerName,
       damage_dealt:damageDealt,

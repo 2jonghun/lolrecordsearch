@@ -93,8 +93,7 @@ const ko = {
 }
 
 const getFloatFixed = (value, fixed) => {
-  if (value == 0) return 
-  return Number(parseFloat(+(Math.round(value+"e+2")+"e-2")).toFixed(fixed));
+  return parseFloat(+(Math.round(value+"e+2")+"e-2")).toFixed(fixed);
 };
 
 function timeForToday(value) {
