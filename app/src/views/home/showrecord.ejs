@@ -44,12 +44,9 @@
       </div>
 
       <div class="matchrecord">
-      <% if (info.matchList) { %>
-        <div id="div_load_image" style="position:absolute; top:50%; left:50%;width:0px;height:0px; z-index:9999; background:#f0f0f0; filter:alpha(opacity=50); opacity:alpha*0.5; margin:auto; padding:0; text-align:center">
-          <img src="/loading/loading.gif" style="width:100px; height:100px;">
-        </div>
+      <% if (info.matchList && matchCount) { %>
         <div class="matchrecord__left"></div>
-        <div class="matchrecord__right"><% for(let i = 0; i < info.matchList.length; i++) { %><div id="match<%= i %>-wrapper" class="match-wrapper"><div id="match-<%= i %>" class="match-record-wrapper" data-server="<%= info.reqServer %>" data-matchid="<%= info.matchList[i] %>"></div></div><% } %></div>        
+        <div class="matchrecord__right"><div id="div_load_image"><i class="fa-solid fa-spinner"></i></div><% for(let i = 0; i < info.matchList.length; i++) { %><% if (i == matchCount) break %><div id="match<%= i %>-wrapper" class="match-wrapper"><div id="match-<%= i %>" class="match-record-wrapper" data-server="<%= info.reqServer %>" data-matchid="<%= info.matchList[i] %>"></div></div><% } %><button class="more">더 보기</button></div>
       <% } else { %>
         <div class="no-match-record">
           <i class="fa-regular fa-circle-xmark"></i>
@@ -60,13 +57,11 @@
       <% } %>
       </div>
     </div>
-	 
-    <!-- footer -->
-    <div class="main__footer">
-      <%- include('../layout/footer'); -%>
-    </div>
-
   </div>
+  <!-- footer -->
+  <footer class="main__footer">
+    <%- include('../layout/footer'); -%>
+  </footer>
 </body>
 
 </html>
