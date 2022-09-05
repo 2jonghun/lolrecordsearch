@@ -51,6 +51,7 @@ class RiotApi {
       .then(res => {
         if (res.statusCode == 200) {
           console.log(res.body);
+          
           const data = {
             encryptedId:res.body.id,
             profileIconId:res.body.profileIconId,

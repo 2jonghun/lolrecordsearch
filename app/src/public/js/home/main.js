@@ -62,27 +62,4 @@ themeLightModeBtn.addEventListener('click', () => {
   moreBtn.style.color = '#F5F5F5';
   mainFooter.style.background = '#31313C';
   mainFooter.style.color = '#F5F5F5';
-<<<<<<< HEAD
 })
-=======
-})
-
-const themeCookie = getCookie('theme');
-
-if (themeCookie == 'dark') {
-  themeDarkModeBtn.className = 'dark-mode';
-  themeLightModeBtn.className = 'light-mode-hide';
-  mainContent.style.background = '#1C1C1F';
-  contentUserProfile.style.background = '#31313C';
-  contentUserProfile.style.color = '#F5F5F5';
-  matchRecord.style.background = '#31313C';
-  loadingImage.style.color = '#F5F5F5';
-  moreBtn.style.border = '1.5px #1C1C1F solid';
-  moreBtn.style.background = '#202124';
-  moreBtn.style.color = '#F5F5F5';
-  mainFooter.style.background = '#31313C';
-  mainFooter.style.color = '#F5F5F5';
-  } else {
-  themeDarkModeBtn.className = 'dark-mode-hide';
-  }
->>>>>>> 19ff79b6c99f90a3d771679597228785ea7ba6ca

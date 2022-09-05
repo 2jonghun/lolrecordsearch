@@ -25,21 +25,22 @@ html {
   height: 46px;
 }
 
-.main__inputbox {
+/* .main__inputbox {
   display: flex;
 
   width: 100%;
-<<<<<<< HEAD
   height: 100%;
-=======
-  height: 95%;
 
-  border: 0;
+  padding: 0;
+  margin: 0;
   font-size: 18px;
 
   background-color: #F5F5F5;
-
-  padding-left: 0.5em;
+  border-top-left-radius: 25px;
+  border-bottom-left-radius: 25px;
+  border-top-right-radius: 25px;
+  border-bottom-right-radius: 25px;
+  border: 0;
   outline: none;
 }
 
@@ -49,7 +50,6 @@ html {
 
 ::placeholder {
   color: #24292e;
->>>>>>> 19ff79b6c99f90a3d771679597228785ea7ba6ca
 }
 
 .server__list {
@@ -62,35 +62,28 @@ html {
 
   text-align: center;
 
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
+  border: 0;
+  padding: 0;
+
   border-top-left-radius: 25px;
   border-bottom-left-radius: 25px;
 
-  border: 0;
+  margin-right: 0;
+  text-align-last: center;
+  -moz-text-align-last: center;
 
   font-weight: 700;
   background-color: #F5F5F5;
-<<<<<<< HEAD
   color: #24292e;
-=======
-  color:#24292e;
->>>>>>> 19ff79b6c99f90a3d771679597228785ea7ba6ca
 
   font-size: 16px;
 
   cursor: pointer;
-
-  outline: none;
 }
 
 @supports not (text-align-last: center) {
   .server__list {
-<<<<<<< HEAD
-    padding-left: 1.3em;
-=======
-      padding-left: 1.142em;
->>>>>>> 19ff79b6c99f90a3d771679597228785ea7ba6ca
+    padding-left: 1.142em;
   }
 }
 
@@ -110,17 +103,8 @@ html {
   outline: none;
 }
 
-.theme-mode {
-  display: none;
-}
-
-::placeholder {
-  color: #24292e;
-}
-
 .server__list::-ms-expand {
   display: none;
-  /* IE 10, 11 */
 }
 
 .server__list option{
@@ -143,11 +127,112 @@ html {
 
   font-weight: 700;
   background-color: #F5F5F5;
-  color:#24292e;
+  color: #24292e;
 
   font-size: 18px;
 
-  cursor:pointer;
+  cursor: pointer;
+  outline: none;
+} */
+
+.main__inputbox {
+  display: flex;
+
+  width: 100%;
+  height: 100%;
+}
+
+.main__inputbox input {
+  width: 74%;
+  height: 100%;
+
+  border: 0;
+  font-size: 16px;
+
+  background-color: #F5F5F5;
+
+  padding: 0;
+  margin: 0;
+
+  padding-left: 0.2em;
+  outline: none;
+}
+
+.theme-mode {
+  display: none;
+}
+
+::placeholder {
+  color: #24292e;
+  /* font-size: 18px; */
+}
+
+.server__list {
+  width: 13%;
+  height: 100%;
+
+  appearance: none;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+
+  text-align: center;
+
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-top-left-radius: 25px;
+  border-bottom-left-radius: 25px;
+
+  border: 0;
+
+  padding: 0;
+  margin-right: 0;
+  text-align-last: center;
+  -moz-text-align-last: center;
+
+  font-weight: 700;
+  background-color: #F5F5F5;
+  color: #24292e;
+
+  font-size: 16px;
+
+  outline: none;
+  cursor: pointer;
+}
+
+@supports not (text-align-last: center) {
+  .server__list {
+    padding-left: 1.142em;
+  }
+}
+
+.server__list::-ms-expand {
+  display: none;
+  /* IE 10, 11 */
+}
+
+.server__list option {
+  color: #24292e;
+}
+
+.show_record_btn {
+  width: 13%;
+  height: 100%;
+
+  border-top-right-radius: 25px;
+  border-bottom-right-radius: 25px;
+
+  padding: 0;
+  margin-left: 0;
+
+  border: 0;
+
+  font-weight: 700;
+  background-color: #F5F5F5;
+  color: #24292e;
+
+  font-size: 18px;
+
+  cursor: pointer;
 }
 
 .thisweekrotations {

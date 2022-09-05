@@ -1,10 +1,6 @@
 const summonerName = document.querySelector('.summonerName').innerText;
 document.title = `${summonerName} - 게임 전적 - LoL Record`;
 
-const soloRankTier = document.querySelector('.solo-tier');
-const soloRankTierText = soloRankTier.innerText.split(' ')[0]
-// if (soloRankTierText == 'GOLD') soloRankTier.style.color = 'black';
-
 const themeCookie = getCookie('theme');
 
 if (themeCookie == 'dark') {
@@ -20,9 +16,14 @@ if (themeCookie == 'dark') {
   moreBtn.style.color = '#F5F5F5';
   mainFooter.style.background = '#31313C';
   mainFooter.style.color = '#F5F5F5';
-} else {
+  } else {
   themeDarkModeBtn.className = 'dark-mode-hide';
-}
+  }
+
+
+const soloRankTier = document.querySelector('.solo-tier');
+const soloRankTierText = soloRankTier.innerText.split(' ')[0]
+// if (soloRankTierText == 'GOLD') soloRankTier.style.color = 'black';
 
 	//   밝은 파랑 #E7EFFF
 	//   파랑 사이드 #C1D0F2
@@ -68,11 +69,7 @@ Promise.all(matchIds)
 	  const queueId = gameData.queueId;
 	  const duration = gameData.duration;
 	  if (duration == 0 || queueId == 2000 || queueId == 2010 || queueId == 2020) {
-<<<<<<< HEAD
 		const mrwTag = document.querySelector(`#match${matchI}-wrapper`);
-=======
-		const mrwTag = document.querySelector(`#match${i}-wrapper`);
->>>>>>> 19ff79b6c99f90a3d771679597228785ea7ba6ca
 		mrwTag.parentNode.removeChild(mrwTag);
 		continue;
 	  }
@@ -151,7 +148,7 @@ Promise.all(matchIds)
 		gameResultEnBottom = 'REMAKE';
 		gameResultKoBottom = '';
 	  }
-	  else if (blueTeamWin == true) {
+	  else if (participantsTop[0].win == 1) {
 		gameResultEnTop = 'WIN';
 		gameResultKoTop = '승리';
 		gameResultEnBottom = 'LOSE';
@@ -174,8 +171,8 @@ Promise.all(matchIds)
 
 	  for (let i = 0; i < participantsBottom.length; i++) {
 		mainRunes[`runeBottom${i}`] = checkRune(participantsBottom[i].rune_main, participantsTop[i].rune_sub)
-		if (participantsTop[i].summoner_name == summonerName) participantsBottom[i].summonerSpan = `<span id="main_summoner${matchI}"><a href="/summoners/${matchServer}/${participantsTop[i].summoner_name}">${participantsTop[i].summoner_name}</a></span>`
-		else participantsBottom[i].summonerSpan = `<span><a href="/summoners/${matchServer}/${participantsTop[i].summoner_name}">${participantsTop[i].summoner_name}</a></span>`
+		if (participantsBottom[i].summoner_name == summonerName) participantsBottom[i].summonerSpan = `<span id="main_summoner${matchI}"><a href="/summoners/${matchServer}/${participantsBottom[i].summoner_name}">${participantsBottom[i].summoner_name}</a></span>`
+		else participantsBottom[i].summonerSpan = `<span><a href="/summoners/${matchServer}/${participantsBottom[i].summoner_name}">${participantsBottom[i].summoner_name}</a></span>`
 	  }
 		
 	  let recentGameMain = ``;
@@ -205,12 +202,7 @@ Promise.all(matchIds)
 				  <img src="${RIOTCDNURI}/img/${mainRunes.runeTop0[1][0]}" width="16" height="16">
 				</div>
 				<div class="main-name">
-<<<<<<< HEAD
 				  ${participantsTop[0].summonerSpan}
-=======
-	  			  <span><a href="/summoners/${matchServer}/${participantsTop[0].summoner_name}">${participantsTop[0].summoner_name}</a></span>
-				  <span></span>
->>>>>>> 19ff79b6c99f90a3d771679597228785ea7ba6ca
 				</div>
 				<div class="main-kda">
 				  <div class="main-k-d-a">
@@ -893,7 +885,6 @@ Promise.all(matchIds)
 	  else teamId.html(` 킬관여 <span>${getFloatFixed(((kills+assists)/redTotalKills) * 100, 0)}%</span>`);
 		
 	  const gameTypeText = $(`${matchNum} > div > .game > .type`);
-<<<<<<< HEAD
 	  const gameResultText = $(`#recent-game-main${matchI} > div > div > div > .result`);
       const gameResult = $(`${matchNum} > div`).attr('result');
 	  const gameResult2 = $(`#recent-game-main${matchI} > div`).attr('result');
@@ -908,56 +899,26 @@ Promise.all(matchIds)
 		$(`#match-${matchI} > .recent-game-header > .show-game-main`).css('background', '#1C1C1F');
 		$(`#match-${matchI} > div > .info > .items > div > img`).css('background', '#515163');
 		$(`#match-${matchI} > div > .info > .items > div > div`).css('background', '#515163');
-=======
-	  const gameResultText = $(`#recent-game-main${i} > div > div > div > .result`);
-      const gameResult = $(`${matchNum} > div`).attr('result');
-	  const gameResult2 = $(`#recent-game-main${i} > div`).attr('result');
-	  const recentGameMainUl = $(`#recent-game-main${i} > div > ul`);
-	  const recentGameMainTopItemImg = $(`#recent-game-main${i} > #result-top > ul > li > div > .items > div > img`);
-	  const recentGameMainTopItemDiv = $(`#recent-game-main${i} > #result-top > ul > li > div > .items > div > div`);
-	  const recentGameMainBottomItemImg = $(`#recent-game-main${i} > #result-bottom > ul > li > div > .items > div > img`);
-	  const recentGameMainBottomItemDiv = $(`#recent-game-main${i} > #result-bottom > ul > li > div > .items > div > div`);
-
-	  if (gameResult == 'Remake') {
-		matchWrapper.css('background', '#282830');
-		$(`#match-${i} > .recent-game-header > .show-game-main`).css('background', '#1C1C1F');
-		$(`#match-${i} > div > .info > .items > div > img`).css('background', '#515163');
-		$(`#match-${i} > div > .info > .items > div > div`).css('background', '#515163');
->>>>>>> 19ff79b6c99f90a3d771679597228785ea7ba6ca
 		gameTypeText.css('color', '#F5F5F5');
 	  }
       else if (gameResult == 'WIN') {
 		matchWrapper.css('background', '#28344E');
-<<<<<<< HEAD
 		$(`#match-${matchI} > .recent-game-header > .show-game-main`).css('background', '#2F436E');
 		$(`#match-${matchI} > div > .info > .items > div > img`).css('background', '#2F436E');
 		$(`#match-${matchI} > div > .info > .items > div > div`).css('background', '#2F436E');
-=======
-		$(`#match-${i} > .recent-game-header > .show-game-main`).css('background', '#2F436E');
-		$(`#match-${i} > div > .info > .items > div > img`).css('background', '#2F436E');
-		$(`#match-${i} > div > .info > .items > div > div`).css('background', '#2F436E');
->>>>>>> 19ff79b6c99f90a3d771679597228785ea7ba6ca
+		$(`#match-${matchI} > .recent-game-header > .show-game-main`).css('background', '#2F436E');
+		$(`#match-${matchI} > div > .info > .items > div > img`).css('background', '#2F436E');
+		$(`#match-${matchI} > div > .info > .items > div > div`).css('background', '#2F436E');
 		gameTypeText.css('color', '#408FFF');
 	  }
       else {
 		matchWrapper.css('background', '#59343B');
-<<<<<<< HEAD
 		$(`#match-${matchI} > .recent-game-header > .show-game-main`).css('background', '#703C47');
 		$(`#match-${matchI} > div > .info > .items > div > img`).css('background', '#703C47');
 		$(`#match-${matchI} > div > .info > .items > div > div`).css('background', '#703C47');
 		gameTypeText.css('color', '#cc0000');
 	  }
 
-=======
-		$(`#match-${i} > .recent-game-header > .show-game-main`).css('background', '#703C47');
-		$(`#match-${i} > div > .info > .items > div > img`).css('background', '#703C47');
-		$(`#match-${i} > div > .info > .items > div > div`).css('background', '#703C47');
-		gameTypeText.css('color', '#cc0000');
-	  }
-
-	  console.log(gameResult2);
-
->>>>>>> 19ff79b6c99f90a3d771679597228785ea7ba6ca
 	  if (gameResult2 == 'REMAKE') {
 		recentGameMainUl[0].style.background = '#1E1E24';
 		recentGameMainUl[1].style.background = '#1E1E24';
