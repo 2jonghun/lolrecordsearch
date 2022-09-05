@@ -21,46 +21,26 @@ html {
 }
 
 .main__searchbox {
-  width: 100%;
-  height: 100%;
-  align-items: center;
-
-  position: relative;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  width: 497px;
+  height: 46px;
 }
 
 .main__inputbox {
   display: flex;
 
-  width: 500px;
-  height: 46px;
-}
-
-.main__inputbox input {
   width: 100%;
-  height: 95%;
-
-  border: 0;
-  font-size: 18px;
-
-  padding-left: 0.5em;
-  outline: none;
-}
-
-::placeholder {
-  color: #24292e;
+  height: 100%;
 }
 
 .server__list {
-  width: 18%;
+  width: 13%;
   height: 100%;
 
   appearance: none;
-  -moz-appearance: none; /* Firefox */ 
-  -webkit-appearance: none; /* Safari and Chrome */
+  -moz-appearance: none;
+  -webkit-appearance: none;
+
+  text-align: center;
 
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
@@ -69,30 +49,50 @@ html {
 
   border: 0;
 
-  padding: 0;
-  margin-right: 0;
-  text-align-last: center;
-  -moz-text-align-last: center;
-  
   font-weight: 700;
-  background-color: white;
-  color:#24292e;
+  background-color: #F5F5F5;
+  color: #24292e;
 
-  font-size: 18px;
+  font-size: 16px;
+
+  cursor: pointer;
 
   outline: none;
-
-  cursor:pointer;
 }
 
 @supports not (text-align-last: center) {
   .server__list {
-      padding-left: 1.2em;
+    padding-left: 1.3em;
   }
 }
 
-.server__list::-ms-expand{
-	display: none; /* IE 10, 11 */
+.main__inputbox input {
+  width: 74%;
+  height: 100%;
+
+  border: 0;
+  font-size: 18px;
+
+  padding: 0;
+  margin: 0;
+
+  background-color: #F5F5F5;
+
+  padding-left: 0.5em;
+  outline: none;
+}
+
+.theme-mode {
+  display: none;
+}
+
+::placeholder {
+  color: #24292e;
+}
+
+.server__list::-ms-expand {
+  display: none;
+  /* IE 10, 11 */
 }
 
 .server__list option{
@@ -100,7 +100,7 @@ html {
 }
 
 .show_record_btn {
-  width: 18%;
+  width: 13%;
   height: 100%;
 
   border-top-right-radius: 25px;
@@ -114,7 +114,7 @@ html {
   border: 0;
 
   font-weight: 700;
-  background-color: white;
+  background-color: #F5F5F5;
   color:#24292e;
 
   font-size: 18px;
@@ -166,4 +166,8 @@ html {
   text-align: center;
 
   background-color: azure;
+}
+
+.main__footer {
+  background-color: #545454;
 }

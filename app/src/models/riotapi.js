@@ -1,8 +1,7 @@
 'use strict';
 
 const superagent = require('superagent');
-// const db = require('../config/db');
-const route = require('../config/serverRoute');
+const route = require('./serverRoute');
 const apiKey = process.env.RIOTAPIKEY;
 const middleUri = 'api.riotgames.com'
 class RiotApi {
@@ -70,7 +69,7 @@ class RiotApi {
   }
 
   getMatchLists() {
-    const matchLists = `https://${this.reqs['serverRegion']}.api.riotgames.com/lol/match/v5/matches/by-puuid/${this.reqs['puuid']}/ids?start=0&count=5`
+    const matchLists = `https://${this.reqs['serverRegion']}.api.riotgames.com/lol/match/v5/matches/by-puuid/${this.reqs['puuid']}/ids?start=0&count=100`
 
     return superagent.get(matchLists).set('X-Riot-Token', apiKey)
       .then(res => {
@@ -202,8 +201,7 @@ class RiotApi {
     else kda = getFloatFixed((kills+assists)/deaths, 2);
     const champLevel = p.champLevel;
     const champKey = p.championId;
-    const runeMain = [p.perks.styles[0].style, 
-      p.perks.styles[0].selections[0].perk];
+    const runeMain = p.perks.styles[0].selections[0].perk;
     const runeSub = p.perks.styles[1].style;
     const spell1 = p.summoner1Id;
     const spell2 = p.summoner2Id
@@ -236,7 +234,7 @@ class RiotApi {
       item4,
       item5,
       item6,
-      largestMultiKill,
+      largest_multi_kill:largestMultiKill,
       gold_earned:goldEarned,
       summoner_name:summonerName,
       damage_dealt:damageDealt,

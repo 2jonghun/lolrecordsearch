@@ -1,11 +1,17 @@
 <div class="main__titlebox">
   <div class="main__logo">
-    <a href="/">
-      <img class="logo__lorec" src="/logo/lorec.svg" alt="logo">
-    </a>
+    <a href="/"><img class="logo__lorec" src="/img/logo/lorec.svg" alt="logo"></a>
   </div>
 </div>
 <div class="main__searchbox">
+  <div class="theme-mode">
+    <div id="theme-dark" class="dark-mode">
+      <i class="fa-solid fa-moon"></i>
+    </div>
+    <div id="theme-light" class="light-mode">
+      <i class="fa-solid fa-sun"></i>
+    </div>
+  </div>
   <div class="main__inputbox">
     <select class="server__list">
       <% if (serverList) { %>

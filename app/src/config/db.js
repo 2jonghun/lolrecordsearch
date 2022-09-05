@@ -6,6 +6,9 @@ const db = mysql.createConnection({
     user: process.env.DBID,
     password: process.env.PASSWORD,
     database: process.env.DATABASE,
+    insecureAuth: true,
+    supportBigNumbers: true,
+    charset: 'utf8mb4',
 });
 
 db.connect();

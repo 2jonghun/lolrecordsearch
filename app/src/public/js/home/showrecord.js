@@ -1,13 +1,47 @@
 const summonerName = document.querySelector('.summonerName').innerText;
-document.title = `${summonerName} - 전적 - LoL Record`;
+document.title = `${summonerName} - 게임 전적 - LoL Record`;
+
 const soloRankTier = document.querySelector('.solo-tier');
 const soloRankTierText = soloRankTier.innerText.split(' ')[0]
 // if (soloRankTierText == 'GOLD') soloRankTier.style.color = 'black';
+
+const themeCookie = getCookie('theme');
+
+if (themeCookie == 'dark') {
+  themeDarkModeBtn.className = 'dark-mode';
+  themeLightModeBtn.className = 'light-mode-hide';
+  mainContent.style.background = '#1C1C1F';
+  contentUserProfile.style.background = '#31313C';
+  contentUserProfile.style.color = '#F5F5F5';
+  matchRecord.style.background = '#31313C';
+  loadingImage.style.color = '#F5F5F5';
+  moreBtn.style.border = '1.5px #1C1C1F solid';
+  moreBtn.style.background = '#202124';
+  moreBtn.style.color = '#F5F5F5';
+  mainFooter.style.background = '#31313C';
+  mainFooter.style.color = '#F5F5F5';
+} else {
+  themeDarkModeBtn.className = 'dark-mode-hide';
+}
+
+	//   밝은 파랑 #E7EFFF
+	//   파랑 사이드 #C1D0F2
+	//   파랑 메인 #CCDBFF
+	
+	//   밝은 레드 #FFEEF0
+	//   레드 사이드 #FECFD1
+	//   레드 메인 #FECFD1
+
+	//    다시하기 #F5F5F8
+	//    사이드   #E6EAEE
+	//     메인    #E6EAEE
 
 const itemUri = 'https://ddragon.bangingheads.net/cdn/latest/img/item';
 
 const matchIdTags = document.querySelectorAll('.match-record-wrapper');
 const matchIds = [];
+
+let matchCount = matchIdTags.length;
 
 let matchServer = '';
 let matchId = '';
@@ -27,12 +61,14 @@ matchIdTags.forEach(matchid => {
 
 Promise.all(matchIds)
   .then(async res => {
-    for (let i=0; i<res.length; i++) {
-	  const matchNum = `#match-${i}`;
-	  const gameData = await res[i].json();
+	let matchI;
+    for (matchI=0; matchI<res.length; matchI++) {
+	  const matchNum = `#match-${matchI}`;
+	  const gameData = await res[matchI].json();
 	  const queueId = gameData.queueId;
-	  if (gameData.duration == 0 || queueId == 2000 || queueId == 2010 || queueId == 2020) {
-		const mrwTag = document.querySelector(`#match${i}-wrapper`);
+	  const duration = gameData.duration;
+	  if (duration == 0 || queueId == 2000 || queueId == 2010 || queueId == 2020) {
+		const mrwTag = document.querySelector(`#match${matchI}-wrapper`);
 		mrwTag.parentNode.removeChild(mrwTag);
 		continue;
 	  }
@@ -59,17 +95,20 @@ Promise.all(matchIds)
 	  userNameRedTag.append(userNameRed);
 
 	  const showGameMainDiv = $(`${matchNum} > div > .show-game-main`);
-	  const showGameMainBtn = `<button id="show-game-main-btn${i}" class="show-game-main-btn"><i class="fa-solid fa-angle-down"></i></i></button>`;
+	  const showGameMainBtn = `<button id="show-game-main-btn${matchI}" class="show-game-main-btn"><i class="fa-solid fa-angle-down"></i></i></button>`;
 	  showGameMainDiv.append(showGameMainBtn);
 
-	  $(`#show-game-main-btn${i}`).click(function() {
-		const recentGameMain = `#recent-game-main${i}`;
-		const showGameMainIcon = $(`#show-game-main-btn${i}`);
-		if ($(recentGameMain).attr('class') == 'recent-game-main-hide') {
-		  $(recentGameMain).attr('class', 'recent-game-main')
+	  const showGameMainBtnr = $(`#show-game-main-btn${matchI}`);
+	  const showRecentGameMain = `#recent-game-main${matchI}`;
+	  const showGameMainIcon = $(`#show-game-main-btn${matchI}`);
+
+
+	  showGameMainBtnr.click(function() {
+		if ($(showRecentGameMain).attr('class') == 'recent-game-main-hide') {
+		  $(showRecentGameMain).attr('class', 'recent-game-main')
 		  showGameMainIcon.css('transform', 'rotate(180deg)')
 		} else {
-		  $(recentGameMain).attr('class', 'recent-game-main-hide')
+		  $(showRecentGameMain).attr('class', 'recent-game-main-hide')
 		  showGameMainIcon.css('transform', 'rotate(360deg)')
 		}
 	  })
@@ -82,8 +121,6 @@ Promise.all(matchIds)
 	  let bottomTeam;
 	  let topTotalKills;
 	  let bottomTotalKills;
-	  let topTotalDamageDealt;
-	  let bottomTotalDamageDealt;
 	  let participantsTop;
 	  let participantsBottom;
 	  
@@ -94,18 +131,6 @@ Promise.all(matchIds)
 		bottomTotalKills = redTotalKills;
 		participantsTop = participantsBlue;
 		participantsBottom = participantsRed;
-
-		if (blueTeamWin == true) {
-		  gameResultEnTop = 'WIN';
-		  gameResultKoTop = '승리';
-		  gameResultEnBottom = 'LOSE';
-		  gameResultKoBottom = '패배';
-		} else {
-		  gameResultEnBottom = 'WIN';
-		  gameResultKoBottom = '승리';
-		  gameResultEnTop = 'LOSE';
-		  gameResultKoTop = '패배';
-		}
 	  }
 	  else { 
 	    topTeam = '레드팀';
@@ -114,34 +139,45 @@ Promise.all(matchIds)
 		bottomTotalKills = blueTotalKills;
 		participantsTop = participantsRed;
 		participantsBottom = participantsBlue;
+	  }
 
-		if (redTeamWin == true) {
-		  gameResultEnTop = 'WIN';
-		  gameResultKoTop = '승리';
-		  gameResultEnBottom = 'LOSE';
-		  gameResultKoBottom = '패배';
-		} else {
-		  gameResultEnBottom = 'WIN';
-		  gameResultKoBottom = '승리';
-		  gameResultEnTop = 'LOSE';
-		  gameResultKoTop = '패배';
-		}
+	  if (duration < 300) {
+		gameResultEnTop = 'REMAKE';
+		gameResultKoTop = '';
+		gameResultEnBottom = 'REMAKE';
+		gameResultKoBottom = '';
+	  }
+	  else if (blueTeamWin == true) {
+		gameResultEnTop = 'WIN';
+		gameResultKoTop = '승리';
+		gameResultEnBottom = 'LOSE';
+		gameResultKoBottom = '패배';
+	  }
+	  else {
+		gameResultEnBottom = 'WIN';
+		gameResultKoBottom = '승리';
+		gameResultEnTop = 'LOSE';
+	    gameResultKoTop = '패배';
 	  }
 
 	  const mainRunes = {};
 
 	  for (let i = 0; i < participantsTop.length; i++) {
 		mainRunes[`runeTop${i}`] = checkRune(participantsTop[i].rune_main, participantsTop[i].rune_sub)
+		if (participantsTop[i].summoner_name == summonerName) participantsTop[i].summonerSpan = `<span id="main_summoner${matchI}"><a href="/summoners/${matchServer}/${participantsTop[i].summoner_name}">${participantsTop[i].summoner_name}</a></span>`
+		else participantsTop[i].summonerSpan = `<span><a href="/summoners/${matchServer}/${participantsTop[i].summoner_name}">${participantsTop[i].summoner_name}</a></span>`
 	  }
 
 	  for (let i = 0; i < participantsBottom.length; i++) {
 		mainRunes[`runeBottom${i}`] = checkRune(participantsBottom[i].rune_main, participantsTop[i].rune_sub)
+		if (participantsTop[i].summoner_name == summonerName) participantsBottom[i].summonerSpan = `<span id="main_summoner${matchI}"><a href="/summoners/${matchServer}/${participantsTop[i].summoner_name}">${participantsTop[i].summoner_name}</a></span>`
+		else participantsBottom[i].summonerSpan = `<span><a href="/summoners/${matchServer}/${participantsTop[i].summoner_name}">${participantsTop[i].summoner_name}</a></span>`
 	  }
 		
 	  let recentGameMain = ``;
 		
 	  recentGameMain += `
-	    <div id="recent-game-main${i}" class="recent-game-main-hide">
+	    <div id="recent-game-main${matchI}" class="recent-game-main-hide">
 	      <div id="result-top"  result="${gameResultEnTop}">
 	  		<div class="main-header">
 			  <div class="main-header-result" style="width: 26%;"><span class="result">${gameResultKoTop}</span> (${topTeam})</div>
@@ -165,7 +201,7 @@ Promise.all(matchIds)
 				  <img src="${RIOTCDNURI}/img/${mainRunes.runeTop0[1][0]}" width="16" height="16">
 				</div>
 				<div class="main-name">
-	  			  <span><a href="/summoners/${matchServer}/${participantsTop[0].summoner_name}">${participantsTop[0].summoner_name}</a></span>
+				  ${participantsTop[0].summonerSpan}
 				</div>
 				<div class="main-kda">
 				  <div class="main-k-d-a">
@@ -232,7 +268,7 @@ Promise.all(matchIds)
 				  <img src="${RIOTCDNURI}/img/${mainRunes.runeTop1[1][0]}" width="16" height="16">
 				</div>
 				<div class="main-name">
-	  			  <span><a href="/summoners/${matchServer}/${participantsTop[1].summoner_name}">${participantsTop[1].summoner_name}</a></span>
+	  			  ${participantsTop[1].summonerSpan}
 				</div>
 				<div class="main-kda">
 				  <div class="main-k-d-a">
@@ -299,7 +335,7 @@ Promise.all(matchIds)
 				  <img src="${RIOTCDNURI}/img/${mainRunes.runeTop2[1][0]}" width="16" height="16">
 				</div>
 				<div class="main-name">
-	  			  <span><a href="/summoners/${matchServer}/${participantsTop[2].summoner_name}">${participantsTop[2].summoner_name}</a></span>
+	  			  ${participantsTop[2].summonerSpan}
 				</div>
 				<div class="main-kda">
 				  <div class="main-k-d-a">
@@ -366,7 +402,7 @@ Promise.all(matchIds)
 				  <img src="${RIOTCDNURI}/img/${mainRunes.runeTop3[1][0]}" width="16" height="16">
 				</div>
 				<div class="main-name">
-	  			  <span><a href="/summoners/${matchServer}/${participantsTop[3].summoner_name}">${participantsTop[3].summoner_name}</a></span>
+	  			  ${participantsTop[3].summonerSpan}
 				</div>
 				<div class="main-kda">
 				  <div class="main-k-d-a">
@@ -433,7 +469,7 @@ Promise.all(matchIds)
 				  <img src="${RIOTCDNURI}/img/${mainRunes.runeTop4[1][0]}" width="16" height="16">
 				</div>
 				<div class="main-name">
-	  			  <span><a href="/summoners/${matchServer}/${participantsTop[4].summoner_name}">${participantsTop[4].summoner_name}</a></span>
+	  			  ${participantsTop[4].summonerSpan}
 				</div>
 				<div class="main-kda">
 				  <div class="main-k-d-a">
@@ -490,7 +526,7 @@ Promise.all(matchIds)
 		  </div>
 	      <div id="result-bottom" result="${gameResultEnBottom}">
 	  		<div class="main-header">
-			  <div class="main-header-result" style="width: 26%;"><span class="result">${gameResultKoTop}</span> (${topTeam})</div>
+			  <div class="main-header-result" style="width: 26%;"><span class="result">${gameResultKoBottom}</span> (${bottomTeam})</div>
 			  <div class="main-header-kda" style="width: 15%;">KDA</div>
 			  <div class="main-header-damage" style="width: 19%;">딜량</div>
 			  <div class="main-header-cs" style="width: 11%;">CS</div>
@@ -511,7 +547,7 @@ Promise.all(matchIds)
 				  <img src="${RIOTCDNURI}/img/${mainRunes.runeBottom0[1][0]}" width="16" height="16">
 				</div>
 				<div class="main-name">
-	  			  <span><a href="/summoners/${matchServer}/${participantsBottom[0].summoner_name}">${participantsBottom[0].summoner_name}</a></span>
+	  			  ${participantsBottom[0].summonerSpan}
 				</div>
 				<div class="main-kda">
 				  <div class="main-k-d-a">
@@ -578,7 +614,7 @@ Promise.all(matchIds)
 				  <img src="${RIOTCDNURI}/img/${mainRunes.runeBottom1[1][0]}" width="16" height="16">
 				</div>
 				<div class="main-name">
-	  			  <span><a href="/summoners/${matchServer}/${participantsBottom[1].summoner_name}">${participantsBottom[1].summoner_name}</a></span>
+	  			  ${participantsBottom[1].summonerSpan}
 				</div>
 				<div class="main-kda">
 				  <div class="main-k-d-a">
@@ -645,7 +681,7 @@ Promise.all(matchIds)
 				  <img src="${RIOTCDNURI}/img/${mainRunes.runeBottom2[1][0]}" width="16" height="16">
 				</div>
 				<div class="main-name">
-	  			  <span><a href="/summoners/${matchServer}/${participantsBottom[2].summoner_name}">${participantsBottom[2].summoner_name}</a></span>
+	  			  ${participantsBottom[2].summonerSpan}
 				</div>
 				<div class="main-kda">
 				  <div class="main-k-d-a">
@@ -712,7 +748,7 @@ Promise.all(matchIds)
 				  <img src="${RIOTCDNURI}/img/${mainRunes.runeBottom3[1][0]}" width="16" height="16">
 				</div>
 				<div class="main-name">
-	  			  <span><a href="/summoners/${matchServer}/${participantsBottom[3].summoner_name}">${participantsBottom[3].summoner_name}</a></span>
+	  			  ${participantsBottom[3].summonerSpan}
 				</div>
 				<div class="main-kda">
 				  <div class="main-k-d-a">
@@ -779,7 +815,7 @@ Promise.all(matchIds)
 				  <img src="${RIOTCDNURI}/img/${mainRunes.runeBottom4[1][0]}" width="16" height="16">
 				</div>
 				<div class="main-name">
-	  			  <span><a href="/summoners/${matchServer}/${participantsBottom[4].summoner_name}">${participantsBottom[4].summoner_name}</a></span>
+	  			  ${participantsBottom[4].summonerSpan}
 				</div>
 				<div class="main-kda">
 				  <div class="main-k-d-a">
@@ -836,7 +872,7 @@ Promise.all(matchIds)
 		  </div>
 		</div>`;
 
-	  const recentGameWrapper = $(`#match${i}-wrapper`);
+	  const recentGameWrapper = $(`#match${matchI}-wrapper`);
 	  recentGameWrapper.append(recentGameMain);
 	  recentGameWrapper.css('width', '100%');
 	
@@ -847,54 +883,108 @@ Promise.all(matchIds)
 	  if (teamId.attr('teamid') == 100) teamId.html(` 킬관여 <span>${getFloatFixed(((kills+assists)/blueTotalKills) * 100, 0)}%</span>`);
 	  else teamId.html(` 킬관여 <span>${getFloatFixed(((kills+assists)/redTotalKills) * 100, 0)}%</span>`);
 		
-	  const gameResultText = $(`${matchNum} > div > .game > .result`);
-	  const gameResultText2 = $(`#recent-game-main${i} > div > div > div > .result`);
+	  const gameTypeText = $(`${matchNum} > div > .game > .type`);
+	  const gameResultText = $(`#recent-game-main${matchI} > div > div > div > .result`);
       const gameResult = $(`${matchNum} > div`).attr('result');
-	  const gameResult2 = $(`#recent-game-main${i} > div`).attr('result');
+	  const gameResult2 = $(`#recent-game-main${matchI} > div`).attr('result');
+	  const recentGameMainUl = $(`#recent-game-main${matchI} > div > ul`);
+	  const recentGameMainTopItemImg = $(`#recent-game-main${matchI} > #result-top > ul > li > div > .items > div > img`);
+	  const recentGameMainTopItemDiv = $(`#recent-game-main${matchI} > #result-top > ul > li > div > .items > div > div`);
+	  const recentGameMainBottomItemImg = $(`#recent-game-main${matchI} > #result-bottom > ul > li > div > .items > div > img`);
+	  const recentGameMainBottomItemDiv = $(`#recent-game-main${matchI} > #result-bottom > ul > li > div > .items > div > div`);
 
-	  const recentGameMainUl = $(`#recent-game-main${i} > div > ul`);
-
-      if (gameResult == 'WIN') {
+	  if (gameResult == 'Remake') {
+		matchWrapper.css('background', '#282830');
+		$(`#match-${matchI} > .recent-game-header > .show-game-main`).css('background', '#1C1C1F');
+		$(`#match-${matchI} > div > .info > .items > div > img`).css('background', '#515163');
+		$(`#match-${matchI} > div > .info > .items > div > div`).css('background', '#515163');
+		gameTypeText.css('color', '#F5F5F5');
+	  }
+      else if (gameResult == 'WIN') {
 		matchWrapper.css('background', '#28344E');
-		$(`#match-${i} > .recent-game-header > .show-game-main`).css('background', '#2F436E');
-		gameResultText.css('color', '#408FFF');
+		$(`#match-${matchI} > .recent-game-header > .show-game-main`).css('background', '#2F436E');
+		$(`#match-${matchI} > div > .info > .items > div > img`).css('background', '#2F436E');
+		$(`#match-${matchI} > div > .info > .items > div > div`).css('background', '#2F436E');
+		gameTypeText.css('color', '#408FFF');
 	  }
       else {
 		matchWrapper.css('background', '#59343B');
-		$(`#match-${i} > .recent-game-header > .show-game-main`).css('background', '#703C47');
-		gameResultText.css('color', '#cc0000');
+		$(`#match-${matchI} > .recent-game-header > .show-game-main`).css('background', '#703C47');
+		$(`#match-${matchI} > div > .info > .items > div > img`).css('background', '#703C47');
+		$(`#match-${matchI} > div > .info > .items > div > div`).css('background', '#703C47');
+		gameTypeText.css('color', '#cc0000');
 	  }
 
-      if (gameResult2 == 'WIN') {
+	  if (gameResult2 == 'REMAKE') {
+		recentGameMainUl[0].style.background = '#1E1E24';
+		recentGameMainUl[1].style.background = '#1E1E24';
+		recentGameMainTopItemImg.css('background', '#515163');
+		recentGameMainTopItemDiv.css('background', '#515163');
+		recentGameMainBottomItemImg.css('background', '#515163');
+		recentGameMainBottomItemDiv.css('background', '#515163');
+	  }
+      else if (gameResult2 == 'WIN') {
 		recentGameMainUl[0].style.background = '#28344E';
 		recentGameMainUl[1].style.background = '#59343B';
-		gameResultText2[0].style.color = '#408FFF';
-		gameResultText2[1].style.color = '#cc0000';
+		gameResultText[0].style.color = '#408FFF';
+		gameResultText[1].style.color = '#cc0000';
+		recentGameMainTopItemImg.css('background', '#2F436E');
+		recentGameMainTopItemDiv.css('background', '#2F436E');
+		recentGameMainBottomItemImg.css('background', '#703C47');
+		recentGameMainBottomItemDiv.css('background', '#703C47');
 	  }
       else {
 		recentGameMainUl[0].style.background = '#59343B';
-		recentGameMainUl[1].style.background = '#2F436E';
-		gameResultText2[0].style.color = '#cc0000';
-		gameResultText2[1].style.color = '#408FFF';
+		recentGameMainUl[1].style.background = '#28344E';
+		gameResultText[0].style.color = '#cc0000';
+		gameResultText[1].style.color = '#408FFF';
+		recentGameMainTopItemImg.css('background', '#703C47');
+		recentGameMainTopItemDiv.css('background', '#703C47');
+		recentGameMainBottomItemImg.css('background', '#2F436E');
+		recentGameMainBottomItemDiv.css('background', '#2F436E');
 	  }
+
+	//   밝은 파랑 #E7EFFF
+	//   파랑 사이드 #C1D0F2
+	//   파랑 메인 #CCDBFF
+	
+	//   밝은 레드 #FFEEF0
+	//   레드 사이드 #FECFD1
+	//   레드 메인 #FECFD1
+
+	//    다시하기 #F5F5F8
+	//    사이드   #E6EAEE
+	//     메인    #E6EAEE
+
+	  const mainSummoner = $(`#main_summoner${matchI}`);
+	  const mainSummonerParent = mainSummoner.parent().parent();
+
+	  console.log(mainSummonerParent.parent().css('background-color'))
+
+	  if (mainSummonerParent.parent().css('background-color') == 'rgb(89, 52, 59)') mainSummonerParent.css('background', '#5C2D37');
+	  else if (mainSummonerParent.parent().css('background-color') == 'rgb(30, 30, 36)') mainSummonerParent.css('background', '#151518');
+	  else mainSummonerParent.css('background', '#24355B');
 
 	  const multiKill = $(`${matchNum} > div > .info > .kda > .multi_kill`);
 	  if (multiKill.attr('result')) multiKill.css('font-size', '12px').css('width', '62px').css('height', '26px')
 		  .css('background', '#8B0000').css('margin-top', '12px').css('text-align', 'center').css('display', 'flex')
 		  .css('justify-content', 'center').css('align-items', 'center').css('border-radius', '1em');
     }
-	$("#div_load_image").hide();
+
 	const checkMrwTag = document.querySelector('.matchrecord__right');
-	if (!checkMrwTag.hasChildNodes()) {
-	  checkMrwTag.innerHTML = `
-	  	<div class="no-match-record">
-		  <i class="fa-regular fa-circle-xmark"></i>
-		  <span class="no-match">
-		    기록된 전적이 없습니다.
-		  </span>
-		</div>`;
-	}
-	$('.match-record-wrapper').show();
+	const loadingDiv = document.querySelector('#div_load_image');
+
+	checkMrwTag.removeChild(loadingDiv)
+	
+	const noMatchDiv = document.createElement('div')
+	noMatchDiv.className = 'no-match-record';
+	noMatchDiv.innerHTML = '<i class="fa-regular fa-circle-xmark"></i><span class="no-match">기록된 전적이 없습니다.</span>';
+
+	if (checkMrwTag.childNodes.length == 1) checkMrwTag.insertBefore(noMatchDiv, checkMrwTag.firstChild);
+	const noMatchRecord = document.querySelector('.no-match-record');
+	if (themeCookie == 'dark' && noMatchRecord) noMatchRecord.style.color = '#F5F5F5';
+
+	$('.match-wrapper').show();
   });
 
 function recentGame(gameData, summonerName) {
@@ -904,6 +994,7 @@ function recentGame(gameData, summonerName) {
   const blueTeamWin = gameData.team100_win;
   const redTeamWin = gameData.team200_win;
 
+  let checkRemake = false;
   let blueTotalKills = 0;
   let redTotalKills = 0;
   let bestDamageDealt = 0;
@@ -911,6 +1002,10 @@ function recentGame(gameData, summonerName) {
   let participantsData = {participantsBlue:[], participantsRed:[], topTeamId:'', blueTeamWin, redTeamWin};
   let userNameBlue = ``;
   let userNameRed = ``;
+
+  if (gameData.duration < 300) {
+	checkRemake = true;
+  }
 
   for (let i=0; i<gameData.participants.length; i++) {
     const participants = gameData.participants[i];
@@ -935,7 +1030,7 @@ function recentGame(gameData, summonerName) {
     const minMinionsKilled = getFloatFixed(minionsKilled/(gameData.duration/60), 1);
     const visionWards = participants.vision_wards_bought;
     const teamId = participants.team_id;
-	const largestMultiKill = participants.largestMultiKill;
+	const largestMultiKill = participants.largest_multi_kill;
     let kda = `${participants.kda}:1`;
 	let multiKill = '';
 	
@@ -952,10 +1047,16 @@ function recentGame(gameData, summonerName) {
 	  
     let gameResultEn;
     let gameResultKo;
-    if (gameResult == 1) {
+
+	if (checkRemake) {
+	  gameResultEn = 'Remake';
+	  gameResultKo = '다시하기';
+	}
+    else if (gameResult == 1) {
       gameResultEn = 'WIN';
       gameResultKo = '승리';
-    } else {
+    } 
+	else {
       gameResultEn = 'LOSE';
       gameResultKo = '패배';
     }
@@ -977,7 +1078,28 @@ function recentGame(gameData, summonerName) {
 
 	participants.min_minions_killed = minMinionsKilled;
 
+	let runeTag = ``;
+
+	if (runes[0][1] && runes[1][0]) {
+	  runeTag = `
+	  <img class="rune_main" src="${runeMainSrc}" width="26" height="26" alt="${runes[0][1]}">
+	  <img class="rune_sub" src="${runeSubSrc}" width="26" height="26" alt="${runes[1][1]}">`;
+	} else if (runes[0][1]) {
+	  runeTag = `
+	  <img class="rune_main" src="${runeMainSrc}" width="26" height="26" alt="${runes[0][1]}">
+	  <div class="rune_sub"></div>`;
+	} else {
+	  runeTag = `
+	  <div class="rune_main"></div>
+	  <img class="rune_sub" src="${runeSubSrc}" width="26" height="26">`;
+	}
+
+	let checkSummonerName = false;
+
     if (pSummonerName == summonerName) {
+	  participantsData.topTeamId = teamId;
+	  checkSummonerName = true;
+
       recentGameHeader += `
         <div result="${gameResultEn}" teamid="${teamId}" class="recent-game-header">
           <div class="game">
@@ -1002,8 +1124,7 @@ function recentGame(gameData, summonerName) {
               </div>
               <div class="runes">
                 <div class="rune">
-                  <img class="rune_main" src="${runeMainSrc}" width="26" height="26" alt="${runes[0][1]}">
-                  <img class="rune_sub" src="${runeSubSrc}" width="26" height="26" alt="${runes[1][1]}">
+				  ${runeTag}
                 </div>
               </div>
             </div>
@@ -1059,29 +1180,19 @@ function recentGame(gameData, summonerName) {
 		  <div class="participants"><ul class="blue"></ul><ul class="red"></ul></div>
 		  <div class="show-game-main"></div>
         </div>`;
-	  if (teamId == 100) {
-		blueTotalKills += kills;
-		participantsData.participantsBlue.push(participants);
-		participantsData.topTeamId = participants.team_id;
-	    userNameBlue += `<li><div class="p-icon"><img src="${champImgSrc}" weight="16" height="16" alt="${champNameId[1]}"></div><a href="/summoners/${matchServer}/${pSummonerName}" style="font-weight: bold;">${pSummonerName}</a></li>`;
-	  }
-	  else {
-		redTotalKills += kills;
-		participantsData.participantsRed.push(participants);
-		participantsData.topTeamId = participants.team_id;
-	    userNameRed += `<li><div class="p-icon"><img src="${champImgSrc}" weight="16" height="16" alt="${champNameId[1]}"></div><a href="/summoners/${matchServer}/${pSummonerName}" style="font-weight: bold;">${pSummonerName}</a></li>`;
-	  }
-    } else {
-	  if (teamId == 100) {
-	    blueTotalKills += kills;
-		participantsData.participantsBlue.push(participants);
-	    userNameBlue += `<li><div class="p-icon"><img src="${champImgSrc}" weight="16" height="16" alt="${champNameId[1]}"></div><a href="/summoners/${matchServer}/${pSummonerName}">${pSummonerName}</a></li>`;
-	  }
+    }
+
+	if (teamId == 100) {
+	  blueTotalKills += kills;
+	  participantsData.participantsBlue.push(participants);
+	  if (checkSummonerName) userNameBlue += `<li><div class="p-icon"><img src="${champImgSrc}" weight="16" height="16" alt="${champNameId[1]}"></div><a style="font-weight: bold;" href="/summoners/${matchServer}/${pSummonerName}">${pSummonerName}</a></li>`;
+	  else userNameBlue += `<li><div class="p-icon"><img src="${champImgSrc}" weight="16" height="16" alt="${champNameId[1]}"></div><a href="/summoners/${matchServer}/${pSummonerName}">${pSummonerName}</a></li>`;
+	}
     else {
-	    redTotalKills += kills;
-		participantsData.participantsRed.push(participants);
-	    userNameRed += `<li><div class="p-icon"><img src="${champImgSrc}" weight="16" height="16" alt="${champNameId[1]}"></div><a href="/summoners/${matchServer}/${pSummonerName}">${pSummonerName}</a></li>`;
-	  }
+	  redTotalKills += kills;
+	  participantsData.participantsRed.push(participants);
+	  if (checkSummonerName) userNameRed += `<li><div class="p-icon"><img src="${champImgSrc}" weight="16" height="16" alt="${champNameId[1]}"></div><a style="font-weight: bold;" href="/summoners/${matchServer}/${pSummonerName}">${pSummonerName}</a></li>`;
+	  else userNameRed += `<li><div class="p-icon"><img src="${champImgSrc}" weight="16" height="16" alt="${champNameId[1]}"></div><a href="/summoners/${matchServer}/${pSummonerName}">${pSummonerName}</a></li>`;
 	}
   }
   return { recentGameHeader, participantsData, userNameBlue, userNameRed, 
@@ -1115,7 +1226,7 @@ function checkRune(rune1, rune2) {
 
   const getRuneMain = runeMain => {
     runeMain.forEach(data => {
-      if (data.id == rune1[1]) {
+      if (data.id == rune1) {
         rune1Icon = data.icon;
         rune1Name = data.name;
       }
@@ -1123,16 +1234,25 @@ function checkRune(rune1, rune2) {
   }
 
   RUNE.forEach(data => {
-    if (data.id == rune1[0]) {
-      runeMain = data.slots[0].runes;
-      getRuneMain(runeMain);
+    runeId = data.id;
+    runeIcon = data.icon;
+    runeName = data.name;
+
+	const slotRunes = data.slots[0].runes;
+
+	for (const slotRune of slotRunes) {
+	  if (slotRune.id == rune1) {
+		rune1Icon = slotRune.icon;
+		rune1Name = slotRune.name;
+		break;
+	  }
+	}
+	
+    if (runeId == rune2) {
+      rune2Icon = runeIcon;
+      rune2Name = runeName;
     }
 
-    if (data.id == rune2) {
-      rune2Icon = data.icon;
-      rune2Name = data.name;
-    }
   })
-
   return [[rune1Icon, rune1Name], [rune2Icon, rune2Name]];
 }

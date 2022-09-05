@@ -1,7 +1,7 @@
 'use strict';
 
-const RiotApi = require('../../models/riotapi');
-const RiotData = require('../../models/riotdata');
+const RiotApi = require('../../models/RiotApi');
+const RiotData = require('../../models/RiotData');
 
 const superagent = require('superagent');
 
@@ -53,11 +53,12 @@ const output = {
   },
 
   showRecord: async (req, res) => {
+    const matchCount = 10;
     const reqServer = req.params.server;
     let reqUserName = req.params.username;
 	  
-	if (reqUserName.length == 2) reqUserName = encodeURI(reqUserName[0] + ' ' + reqUserName[1]);
-	else reqUserName = encodeURI(reqUserName);
+    if (reqUserName.length == 2) reqUserName = encodeURI(reqUserName[0] + ' ' + reqUserName[1]);
+    else reqUserName = encodeURI(reqUserName);
 
     res.cookie('latest-server', reqServer, cookieConfig);
 
@@ -75,16 +76,20 @@ const output = {
       return res.render('home/notfound', { serverList, latestServer:reqServer });
     }
 	
-	if (!idInfo.solo) {
-      return res.render('home/showrecord', { solo:null, free:null, info:idInfo.info, serverList, latestServer:reqServer });
+    if (!idInfo.solo && !idInfo.free) {
+      return res.render('home/showrecord', { solo:null, free:null, info:idInfo.info, matchCount, serverList, latestServer:reqServer });
     }
 	  
-    else if (!idInfo.free) {
-      return res.render('home/showrecord', { solo:idInfo.solo, free:null, info:idInfo.info, serverList, latestServer:reqServer });
-    } else {
-	  // console.log(idInfo.solo, 'solo')
-	  // console.log(idInfo.free, 'free')
-      return res.render('home/showrecord', { solo:idInfo.solo, free:idInfo.free, info:idInfo.info, serverList, latestServer:reqServer });
+    else if (idInfo.solo && !idInfo.free) {
+      return res.render('home/showrecord', { solo:idInfo.solo, free:null, info:idInfo.info, matchCount, serverList, latestServer:reqServer });
+    }
+    
+    else if (idInfo.free && !idInfo.solo ) {
+      return res.render('home/showrecord', { solo:null, free:idInfo.free, info:idInfo.info, matchCount, serverList, latestServer:reqServer });
+    }
+    
+    else {
+      return res.render('home/showrecord', { solo:idInfo.solo, free:idInfo.free, info:idInfo.info, matchCount, serverList, latestServer:reqServer });
     }
   }
 };
