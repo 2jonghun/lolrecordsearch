@@ -2,10 +2,20 @@ const summonerName = document.querySelector('.summonerName').innerText;
 document.title = `${summonerName} - 게임 전적 - LoL Record`;
 
 const themeCookie = getCookie('theme');
+const checkTheme = document.querySelector('.theme-mode');
+
+const makeDarkTemeDiv = document.createElement('div');
+makeDarkTemeDiv.id = 'theme-dark';
+makeDarkTemeDiv.className = 'dark-mode';
+makeDarkTemeDiv.innerHTML = '<i class="fa-solid fa-moon"></i>';
+
+const makeLightTemeDiv = document.createElement('div');
+makeLightTemeDiv.id = 'theme-light';
+makeLightTemeDiv.className = 'light-mode';
+makeLightTemeDiv.innerHTML = '<i class="fa-solid fa-sun"></i>';
 
 if (themeCookie == 'dark') {
-  themeDarkModeBtn.className = 'dark-mode';
-  themeLightModeBtn.className = 'light-mode-hide';
+  checkTheme.appendChild(makeDarkTemeDiv);
   mainContent.style.background = '#1C1C1F';
   contentUserProfile.style.background = '#31313C';
   contentUserProfile.style.color = '#F5F5F5';
@@ -16,10 +26,43 @@ if (themeCookie == 'dark') {
   moreBtn.style.color = '#F5F5F5';
   mainFooter.style.background = '#31313C';
   mainFooter.style.color = '#F5F5F5';
-  } else {
-  themeDarkModeBtn.className = 'dark-mode-hide';
-  }
+} else {
+  checkTheme.appendChild(makeLightTemeDiv);
+}
 
+makeDarkTemeDiv.addEventListener('click', () => {
+  setCookie('theme', 'light', 30);
+  checkTheme.innerHTML = '';
+  checkTheme.appendChild(makeLightTemeDiv);
+  mainContent.style.background = '#EBEEF1'
+  contentUserProfile.style.background = '#F5F5F5';
+  contentUserProfile.style.color = '#31313C';
+  matchRecord.style.background = '#F5F5F5';
+  const preNoMatchRecord = document.querySelector('.no-match-record');
+  if (preNoMatchRecord) preNoMatchRecord.style.color = '#31313C';
+  moreBtn.style.border = '1.5px #DADADA solid';
+  moreBtn.style.background = '#F3F3F3';
+  moreBtn.style.color = '#31313C';
+  mainFooter.style.background = '#EAEAEA';
+  mainFooter.style.color = '#31313C';
+})
+
+makeLightTemeDiv.addEventListener('click', () => {
+  setCookie('theme', 'dark', 30);
+  checkTheme.innerHTML = '';
+  checkTheme.appendChild(makeDarkTemeDiv);
+  mainContent.style.background = '#1C1C1F';
+  contentUserProfile.style.background = '#31313C';
+  contentUserProfile.style.color = '#F5F5F5';
+  matchRecord.style.background = '#31313C';
+  const preNoMatchRecord = document.querySelector('.no-match-record');
+  if (preNoMatchRecord) preNoMatchRecord.style.color = '#F5F5F5';
+  moreBtn.style.border = '1.5px #1C1C1F solid';
+  moreBtn.style.background = '#202124';
+  moreBtn.style.color = '#F5F5F5';
+  mainFooter.style.background = '#31313C';
+  mainFooter.style.color = '#F5F5F5';
+})
 
 const soloRankTier = document.querySelector('.solo-tier');
 const soloRankTierText = soloRankTier.innerText.split(' ')[0]
