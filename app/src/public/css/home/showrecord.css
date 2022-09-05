@@ -144,9 +144,12 @@ a {
 
   background-color: #F5F5F5;
 
+<<<<<<< HEAD
   padding: 0;
   margin: 0;
 
+=======
+>>>>>>> 19ff79b6c99f90a3d771679597228785ea7ba6ca
   padding-left: 0.5em;
   outline: none;
 }
@@ -164,9 +167,15 @@ a {
 
   appearance: none;
   -moz-appearance: none;
+<<<<<<< HEAD
   -webkit-appearance: none;
 
   text-align: center;
+=======
+  /* Firefox */
+  -webkit-appearance: none;
+  /* Safari and Chrome */
+>>>>>>> 19ff79b6c99f90a3d771679597228785ea7ba6ca
 
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
@@ -175,6 +184,14 @@ a {
 
   border: 0;
 
+<<<<<<< HEAD
+=======
+  padding: 0;
+  margin-right: 0;
+  text-align-last: center;
+  -moz-text-align-last: center;
+
+>>>>>>> 19ff79b6c99f90a3d771679597228785ea7ba6ca
   font-weight: 700;
   background-color: #F5F5F5;
   color: #24292e;
@@ -183,7 +200,11 @@ a {
 
   cursor: pointer;
 
+<<<<<<< HEAD
   outline: none;
+=======
+  cursor: pointer;
+>>>>>>> 19ff79b6c99f90a3d771679597228785ea7ba6ca
 }
 
 @supports not (text-align-last: center) {

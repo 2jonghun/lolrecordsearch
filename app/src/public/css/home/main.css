@@ -29,7 +29,27 @@ html {
   display: flex;
 
   width: 100%;
+<<<<<<< HEAD
   height: 100%;
+=======
+  height: 95%;
+
+  border: 0;
+  font-size: 18px;
+
+  background-color: #F5F5F5;
+
+  padding-left: 0.5em;
+  outline: none;
+}
+
+.theme-mode {
+  display: none;
+}
+
+::placeholder {
+  color: #24292e;
+>>>>>>> 19ff79b6c99f90a3d771679597228785ea7ba6ca
 }
 
 .server__list {
@@ -51,7 +71,11 @@ html {
 
   font-weight: 700;
   background-color: #F5F5F5;
+<<<<<<< HEAD
   color: #24292e;
+=======
+  color:#24292e;
+>>>>>>> 19ff79b6c99f90a3d771679597228785ea7ba6ca
 
   font-size: 16px;
 
@@ -62,7 +86,11 @@ html {
 
 @supports not (text-align-last: center) {
   .server__list {
+<<<<<<< HEAD
     padding-left: 1.3em;
+=======
+      padding-left: 1.142em;
+>>>>>>> 19ff79b6c99f90a3d771679597228785ea7ba6ca
   }
 }
 
